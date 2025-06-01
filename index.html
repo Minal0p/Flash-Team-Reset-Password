@@ -133,6 +133,12 @@
             display: none; /* مخفية بشكل افتراضي */
             line-height: 1.6;
         }
+        .message-area.info { /* New style for info messages */
+            background-color: #cff4fc;
+            color: #055160;
+            border: 1px solid #b6effb;
+            display: block;
+        }
 
         .message-area.success {
             background-color: #d1e7dd; /* أخضر فاتح للنجاح */
@@ -225,14 +231,13 @@
         const SUPABASE_URL = 'https://uzcrjhhvwgllsdsvftuj.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6Y3JqaGh2d2dsbHNkc3ZmdHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyMTcxNzcsImV4cCI6MjA2Mzc5MzE3N30.wy_ei_ZVJoMGbXMVqrW8NVUEgk2-EvPQYpgb9gWMW18';
 
-        let supabaseClient = null; // سيحمل هذا العميل المهيأ
+        let supabaseClient = null; 
 
-        // دالة لعرض الرسائل، معرفة في النطاق العام
         function showMessage(element, message, type) {
-            if (!element) return; // التأكد من أن العنصر موجود
+            if (!element) return; 
             element.textContent = message;
             element.className = 'message-area'; 
-            if (type !== 'none') {
+            if (type !== 'none' && type !== '') { // Check for empty type as well
                 element.classList.add(type); 
                 element.style.display = 'block'; 
             } else {
@@ -240,13 +245,10 @@
             }
         }
 
-        // محاولة تهيئة عميل Supabase
-        // هذا الجزء يعمل بمجرد تحليل السكربت
         if (typeof supabase !== 'undefined' && supabase && typeof supabase.createClient === 'function') {
-            // التأكد من أن القيم ليست هي القيم المؤقتة الافتراضية قبل محاولة التهيئة
             if (SUPABASE_URL && SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
                 try {
-                    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); // استخدام supabase.createClient
+                    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); 
                 } catch (error) {
                     console.error("خطأ في تهيئة Supabase: ", error);
                 }
@@ -265,15 +267,30 @@
             const messageArea = document.getElementById('messageArea'); 
             const submitButton = document.getElementById('submitBtn');
 
-            // عرض رسائل الخطأ في DOM الآن بعد أن أصبح جاهزًا
             if (!supabaseClient && messageArea) {
                  if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY' || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
                     showMessage(messageArea, 'إعدادات الاتصال بـ Supabase غير مكتملة. لا يمكن تحديث كلمة المرور.', 'error');
                  } else if (typeof supabase === 'undefined' || !supabase.createClient) {
                      showMessage(messageArea, 'فشل تحميل مكتبة Supabase. لا يمكن تحديث كلمة المرور.', 'error');
-                 } else if (!messageArea.textContent) { // فقط إذا لم تكن هناك رسالة خطأ بالفعل
+                 } else if (!messageArea.textContent) { 
                     showMessage(messageArea, 'فشل تهيئة الاتصال بالخدمة. لا يمكن تحديث كلمة المرور.', 'error');
                  }
+            }
+
+            // **الإضافة الجديدة: الاستماع لحدث استعادة كلمة المرور**
+            if (supabaseClient) {
+                supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                    if (event === 'PASSWORD_RECOVERY') {
+                        console.log('Supabase: تم التعرف على وضع استعادة كلمة المرور.');
+                        // يمكنك عرض رسالة معلوماتية هنا إذا أردت
+                        // showMessage(messageArea, 'جاهز لتحديث كلمة المرور. يرجى إدخال البيانات الجديدة.', 'info');
+                        // الـ SDK سيتعامل مع الـ session تلقائياً
+                    }
+                    // يمكنك إضافة تعامل مع أحداث أخرى إذا لزم الأمر، مثل SIGNED_IN
+                    // if (event === 'SIGNED_IN' && session) {
+                    //    console.log('Supabase: تم تسجيل الدخول، المستخدم:', session.user.email);
+                    // }
+                });
             }
 
 
@@ -281,12 +298,13 @@
                 event.preventDefault(); 
                 submitButton.disabled = true; 
                 
-                showMessage(messageArea, '', 'none'); // إخفاء الرسائل السابقة
+                // مسح الرسالة قبل كل محاولة إرسال جديدة
+                showMessage(messageArea, '', 'none'); 
 
                 const newPassword = newPasswordInput.value;
                 const confirmPassword = confirmPasswordInput.value;
 
-                if (!supabaseClient) { // استخدام supabaseClient هنا
+                if (!supabaseClient) { 
                     showMessage(messageArea, 'فشل الاتصال بالخدمة. لا يمكن تحديث كلمة المرور.', 'error');
                     submitButton.disabled = false;
                     return;
@@ -311,7 +329,6 @@
                 }
 
                 try {
-                    // استخدام supabaseClient هنا
                     const { data, error } = await supabaseClient.auth.updateUser({
                         password: newPassword
                     });
@@ -323,7 +340,7 @@
                              friendlyErrorMessage = 'كلمة المرور ضعيفة جداً أو لا تستوفي المتطلبات. يرجى اختيار كلمة مرور أقوى.';
                         } else if (error.message.includes("same as the old password")) {
                              friendlyErrorMessage = 'كلمة المرور الجديدة يجب أن تكون مختلفة عن كلمة المرور القديمة.';
-                        } else if (error.message.includes("Invalid token") || error.message.includes("expired") || error.message.includes("Auth session missing")) {
+                        } else if (error.message.includes("Invalid token") || error.message.includes("expired") || error.message.includes("Auth session missing") || error.message.includes("Invalid Refresh Token")) {
                              friendlyErrorMessage = 'رابط إعادة تعيين كلمة المرور غير صالح، انتهت صلاحيته، أو أن الجلسة غير موجودة. يرجى طلب رابط جديد أو التأكد من أنك تستخدم الرابط الصحيح.';
                         }
                         showMessage(messageArea, friendlyErrorMessage, 'error');
@@ -336,7 +353,7 @@
                     console.error('Catch error:', catchError);
                     showMessage(messageArea, 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.', 'error');
                 } finally {
-                    submitButton.disabled = false; // إعادة تفعيل الزر
+                    submitButton.disabled = false; 
                 }
             });
         });
