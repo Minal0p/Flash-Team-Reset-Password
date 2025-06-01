@@ -3,1875 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flash Team - Graduation Project</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
-    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&family=Be+Vietnam+Pro:wght@400;500;700;900&family=Noto+Sans+Arabic:wght@400;500;700;900" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>تعديل كلمة المرور - فريق Flash</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+        /* Global styles and font import */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+
         body {
-            font-family: "Noto Sans Arabic", "Be Vietnam Pro", sans-serif;
-        }
-        /* Helper class to hide sections */
-        .hidden-section {
-            display: none !important;
-        }
-        /* Basic styling for active nav link */
-        .nav-active {
-            font-weight: bold;
-            color: #1978e5; /* Tailwind blue-600 */
-        }
-        /* Custom modal styles */
-        .modal {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff; /* لون الخلفية الرئيسي الأبيض */
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* خط يدعم العربية */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #333333; /* لون النص الافتراضي للجسم */
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            min-height: 100vh; /* لضمان أن الصفحة تأخذ ارتفاع الشاشة بالكامل */
+            box-sizing: border-box;
         }
-        .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
+
+        /* Main container for the form, similar to email template's container */
+        .form-page-container {
+            width: 100%;
+            max-width: 480px; /* عرض مناسب لنموذج تعديل كلمة المرور */
+            background-color: #f9f9f9; /* لون خلفية الحاوية رمادي فاتح جداً */
+            color: #333333; /* لون النص الأساسي داكن */
+            border-radius: 10px; /* حواف دائرية أكثر قليلاً */
+            overflow: hidden; /* لإخفاء أي تجاوز للمحتوى */
+            border: 1px solid #e0e0e0; /* حد خفيف للحاوية */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* ظل خفيف */
+        }
+
+        /* Header section with logo */
+        .page-header {
+            padding: 25px 20px;
             text-align: center;
-            min-width: 300px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-color: #f9f9f9; /* نفس لون الحاوية */
+            border-bottom: 1px solid #eeeeee; /* خط فاصل علوي فاتح */
         }
-        .modal-close-btn {
-            margin-top: 15px;
-            padding: 8px 16px;
-            background-color: #1978e5;
-            color: white;
+
+        .logo {
+            width: 90px; 
+            height: 90px;
+            border-radius: 50%; /* جعل الشعار دائري */
+            border: 2px solid #007bff; /* إطار أزرق حول الشعار (أزرق أفتح) */
+        }
+
+        /* Content area for the form */
+        .form-content {
+            padding: 30px 35px; /* تعديل الحشوة */
+            background-color: #ffffff; /* لون خلفية قسم المحتوى أبيض */
+        }
+
+        .page-title {
+            font-size: 24px; 
+            color: #222222; /* لون العنوان الرئيسي أسود أو رمادي داكن جداً */
+            margin: 0 0 25px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Form group styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #444444; /* لون أغمق قليلاً للوضوح */
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 11px 14px; /* تعديل الحشوة الداخلية */
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box; 
+            font-family: 'Cairo', sans-serif;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); /* تأثير تركيز مشابه لـ Bootstrap */
+        }
+
+        /* Button styling */
+        .submit-button {
+            background-color: #007bff; /* لون خلفية الزر أزرق قياسي */
+            color: #ffffff !important; /* لون نص الزر أبيض */
+            padding: 12px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 6px;
+            display: block;
+            width: 100%;
+            font-size: 16px;
             border: none;
-            border-radius: 5px;
+            transition: background-color 0.3s ease;
             cursor: pointer;
+            margin-top: 15px; /* مسافة فوق الزر */
         }
-        /* Ensure images from Supabase fit well */
-        .event-image, .profile-avatar {
-            object-fit: cover;
-            width: 100%;
-            height: 100%;
+        .submit-button:disabled {
+            background-color: #a0cfff; /* لون أفتح للزر عند تعطيله */
+            cursor: not-allowed;
         }
-        .avatar-preview, #event-image-preview-edit {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 10px;
+
+        .submit-button:hover:not(:disabled) {
+            background-color: #0056b3; /* تغيير لون الخلفية عند التحويم (أزرق أغمق) */
         }
-         #event-image-preview-edit {
-            border-radius: 8px; /* Make it square for event image preview */
-         }
-        .header-logo {
-            height: 40px; /* Adjust as needed */
-            width: auto;
-            object-fit: contain; /* Ensures the logo is not distorted */
+        
+        /* Message area for success/error feedback */
+        .message-area {
+            padding: 12px;
+            margin-top: 15px;
+            margin-bottom: 15px; /* مسافة سفلية إذا ظهرت رسالة */
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+            display: none; /* مخفية بشكل افتراضي */
+            line-height: 1.6;
         }
-        .reaction-btn.selected span { /* Style the span (emoji) when selected */
-            transform: scale(1.2);
-            filter: saturate(2); /* Make emoji more vibrant */
+        .message-area.info { /* New style for info messages */
+            background-color: #cff4fc;
+            color: #055160;
+            border: 1px solid #b6effb;
+            display: block;
         }
-        .reaction-btn span {
-            transition: transform 0.1s ease-in-out, filter 0.1s ease-in-out;
-            font-size: 1.25rem; /* Larger emoji */
-             display: inline-block; /* Needed for transform to work consistently */
+
+        .message-area.success {
+            background-color: #d1e7dd; /* أخضر فاتح للنجاح */
+            color: #0f5132; /* أخضر داكن لنص النجاح */
+            border: 1px solid #badbcc;
+            display: block;
         }
-        .comment-actions button {
-            margin-left: 5px;
-            padding: 2px 5px;
-            font-size: 0.75rem; /* 12px */
-            border-radius: 4px;
+
+        .message-area.error {
+            background-color: #f8d7da; /* أحمر فاتح للخطأ */
+            color: #842029; /* أحمر داكن لنص الخطأ */
+            border: 1px solid #f5c2c7;
+            display: block;
         }
-        .edit-comment-area {
-            width: 100%;
+
+        /* Footer section */
+        .page-footer {
+            padding: 20px;
+            text-align: center;
+            background-color: #f1f1f1; /* لون خلفية التذييل رمادي فاتح جداً */
+            border-top: 1px solid #eeeeee; /* خط فاصل علوي فاتح */
         }
-        .special-member-card { /* Style for special members */
-            border: 3px solid gold;
-            box-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
+
+        .footer-text {
+            font-size: 12px;
+            color: #555555; /* لون نص التذييل رمادي داكن */
+            margin: 0;
+        }
+
+        /* Responsive Styles */
+        @media screen and (max-width: 600px) {
+            body {
+                padding: 10px; /* تقليل الحشوة في الشاشات الصغيرة */
+            }
+            .form-page-container {
+                margin: 10px auto; /* لضمان بعض الهامش */
+                max-width: 100%;
+            }
+            .form-content {
+                padding: 25px 20px !important;
+            }
+            .page-title {
+                font-size: 20px !important;
+            }
+            .submit-button {
+                padding: 11px 18px;
+                font-size: 15px;
+            }
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+            .form-group input[type="password"] {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
-<body class="bg-slate-50">
-    <div class="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden">
-        <div class="layout-container flex h-full grow flex-col">
-            <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7edf3] px-10 py-3 bg-white shadow-sm">
-                <a href="#" class="nav-link flex items-center gap-4 text-[#0e141b]" data-target="home">
-                    <div class="size-10 flex items-center justify-center"> <img src="https://uzcrjhhvwgllsdsvftuj.supabase.co/storage/v1/object/public/drive/Flash.png" alt="شعار فريق Flash" class="header-logo" onerror="this.onerror=null; this.src='https://placehold.co/40x40/768390/FFFFFF?text=F'; this.alt='شعار فريق Flash الافتراضي'; console.error('Error loading team logo from Supabase. Ensure the URL is correct and the object is publicly accessible.')">
-                    </div>
-                    <h2 class="text-[#0e141b] text-xl font-bold leading-tight tracking-[-0.015em]">فريق Flash</h2>
-                </a>
-                <nav class="flex flex-1 justify-center gap-8 items-center">
-                    <a class="nav-link text-[#0e141b] text-sm font-medium leading-normal hover:text-[#1978e5]" href="#" data-target="home">الرئيسية</a>
-                    <a class="nav-link text-[#0e141b] text-sm font-medium leading-normal hover:text-[#1978e5]" href="#" data-target="events">الفعاليات</a>
-                    <a class="nav-link text-[#0e141b] text-sm font-medium leading-normal hover:text-[#1978e5]" href="#" data-target="profiles">الأعضاء</a>
-                    <a id="my-profile-nav-link" class="nav-link text-[#0e141b] text-sm font-medium leading-normal hover:text-[#1978e5] hidden-section" href="#" data-target="my-profile-section">ملفي الشخصي</a>
-                    <a class="nav-link text-[#0e141b] text-sm font-medium leading-normal hover:text-[#1978e5]" href="#" data-target="flash-feed">منشورات فلاش</a>
-                    <a class="nav-link text-[#0e141b] text-sm font-medium leading-normal hover:text-[#1978e5]" href="#" data-target="contact">اتصل بنا</a>
-                </nav>
-                <div id="auth-links" class="flex items-center gap-4">
-                    <button id="nav-login-btn" data-target="login" class="nav-link flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#1978e5] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]">
-                        <span class="truncate">تسجيل الدخول</span>
-                    </button>
-                     <button id="nav-signup-btn" data-target="signup" class="nav-link hidden-section flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 border border-[#1978e5] text-[#1978e5] text-sm font-bold leading-normal tracking-[0.015em]">
-                        <span class="truncate">إنشاء حساب</span>
-                    </button>
+<body>
+    <div class="form-page-container">
+        <header class="page-header">
+            <img src="https://minal0p.github.io/Flash-Team/Flash%20.png" 
+                 alt="شعار فريق Flash" class="logo">
+        </header>
+        <main class="form-content">
+            <h1 class="page-title">تعديل كلمة المرور</h1>
+            <form id="resetPasswordForm">
+                <div class="form-group">
+                    <label for="newPassword">كلمة المرور الجديدة:</label>
+                    <input type="password" id="newPassword" name="newPassword" required placeholder="أدخل كلمة المرور الجديدة">
                 </div>
-                 <div id="user-info" class="hidden-section items-center gap-3">
-                    <img id="user-avatar-nav" src="https://placehold.co/40x40/E0E0E0/B0B0B0?text=User" alt="User Avatar" class="w-10 h-10 rounded-full object-cover">
-                    <span id="user-name-nav" class="text-sm font-medium text-[#0e141b]"></span>
-                    <button id="nav-logout-btn" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-red-500 text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]">
-                        <span class="truncate">تسجيل الخروج</span>
-                    </button>
+                <div class="form-group">
+                    <label for="confirmPassword">تأكيد كلمة المرور الجديدة:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="أعد إدخال كلمة المرور الجديدة">
                 </div>
-            </header>
-
-            <main class="flex-1">
-                <section id="home" class="content-section px-5 md:px-20 lg:px-40 py-5">
-                    <div class="layout-content-container flex flex-col max-w-[960px] mx-auto">
-                        <div class="@container">
-                            <div class="@[480px]:p-4">
-                                <div class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-lg items-center justify-center p-4" style='background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url("https://placehold.co/1200x600/334155/E2E8F0?text=Flash+Team+Hero");'>
-                                    <div class="flex flex-col gap-2 text-center">
-                                        <h1 class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]">
-                                            فريق Flash
-                                        </h1>
-                                        <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
-                                            نحن فريق نعمل على مشروع تخرجنا. هدفنا هو إنشاء حلول مبتكرة تحدث فرقاً.
-                                        </h2>
-                                    </div>
-                                    <button data-target="events" class="nav-link flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#1978e5] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em]">
-                                        <span class="truncate">اكتشف المزيد</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <h2 class="text-[#0e141b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">من نحن</h2>
-                        <p class="text-[#0e141b] text-base font-normal leading-normal pb-3 pt-1 px-4">
-"شرارة الإبداع، وسرعة الإنجاز! هنا فريق Flash، حيث تجتمع 15 عقلية هندسية لامعة، يوحدهم شغف لا حدود له بالابتكار. مهمتنا؟ تحويل الأفكار الجريئة إلى واقع ملموس يضيء المستقبل. استكشفوا معنا جزء من عالمنا الهندسي الذي نفتخر بوجوده لكم هنا."                        </p>
-                        <h2 class="text-[#0e141b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">مشروعنا</h2>
-                        <p class="text-[#0e141b] text-base font-normal leading-normal pb-3 pt-1 px-4">
-انطلاقًا من شغف فريق Flash بالابتكار والتطوير، نقدم تصورًا لمشروع توزيع كهرباء لمبنى حديث (هنكتب المبني هنا ). يهدف هذا المشروع إلى تجاوز الطرق التقليدية في توزيع الطاقة، مع التركيز على دمج أحدث التقنيات لضمان الكفاءة، الاستدامة، الأمان، المرونة، وتقديم تجربة مستخدم لا مثيل لها.                        </p>
-                        </div>
-                </section>
-
-                <section id="login" class="content-section hidden-section px-5 md:px-20 lg:px-40 py-5 flex justify-center items-center min-h-[calc(100vh-140px)]">
-                    <div class="layout-content-container flex flex-col w-full max-w-md p-8 bg-white shadow-xl rounded-lg">
-                        <h2 class="text-[#101418] tracking-light text-[28px] font-bold leading-tight text-center pb-6">مرحباً بعودتك</h2>
-                        <form id="login-form">
-                            <div class="mb-4">
-                                <label class="block text-[#101418] text-base font-medium leading-normal pb-2" for="login-email">البريد الإلكتروني</label>
-                                <input id="login-email" type="email" placeholder="أدخل بريدك الإلكتروني" required class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101418] focus:outline-0 focus:ring-2 focus:ring-[#1978e5] border border-[#d4dbe2] bg-gray-50 focus:border-[#1978e5] h-14 placeholder:text-[#5c718a] p-[15px] text-base font-normal leading-normal"/>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-[#101418] text-base font-medium leading-normal pb-2" for="login-password">كلمة المرور</label>
-                                <input id="login-password" type="password" placeholder="أدخل كلمة المرور" required class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101418] focus:outline-0 focus:ring-2 focus:ring-[#1978e5] border border-[#d4dbe2] bg-gray-50 focus:border-[#1978e5] h-14 placeholder:text-[#5c718a] p-[15px] text-base font-normal leading-normal"/>
-                            </div>
-                            <div class="mb-6"> 
-                                <label class="block text-[#101418] text-base font-medium leading-normal pb-2" for="login-admin-code">رمز المسؤول (اختياري)</label>
-                                <input id="login-admin-code" type="text" placeholder="أدخل رمز المسؤول إن وجد" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101418] focus:outline-0 focus:ring-2 focus:ring-[#1978e5] border border-[#d4dbe2] bg-gray-50 focus:border-[#1978e5] h-14 placeholder:text-[#5c718a] p-[15px] text-base font-normal leading-normal"/>
-                            </div>
-                            <button type="submit" class="flex w-full min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-4 bg-[#1978e5] text-slate-50 text-base font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors">
-                                <span class="truncate">تسجيل الدخول</span>
-                            </button>
-                        </form>
-                        <p class="text-[#5c718a] text-sm font-normal leading-normal pt-4 text-center">
-                            ليس لديك حساب؟ <a href="#" data-target="signup" class="nav-link text-[#1978e5] hover:underline">أنشئ حساباً</a>
-                        </p>
-                         <p class="text-[#5c718a] text-sm font-normal leading-normal pt-2 text-center">
-                            <a href="#" id="forgot-password-link" data-target="forgot-password-section" class="nav-link text-[#1978e5] hover:underline">هل نسيت كلمة المرور؟</a>
-                        </p>
+                <div id="messageArea" class="message-area">
                     </div>
-                </section>
-
-                <section id="signup" class="content-section hidden-section px-5 md:px-20 lg:px-40 py-5 flex justify-center items-center min-h-[calc(100vh-140px)]">
-                    <div class="layout-content-container flex flex-col w-full max-w-md p-8 bg-white shadow-xl rounded-lg">
-                        <h2 class="text-[#101418] tracking-light text-[28px] font-bold leading-tight text-center pb-6">إنشاء حساب جديد</h2>
-                        <form id="signup-form">
-                            <div class="mb-4">
-                                <label class="block text-[#101418] text-base font-medium leading-normal pb-2" for="signup-fullname">الاسم الكامل</label>
-                                <input id="signup-fullname" type="text" placeholder="أدخل اسمك الكامل" required class="form-input input-field"/>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-[#101418] text-base font-medium leading-normal pb-2" for="signup-username">اسم المستخدم</label>
-                                <input id="signup-username" type="text" placeholder="اختر اسم مستخدم" required class="form-input input-field"/>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-[#101418] text-base font-medium leading-normal pb-2" for="signup-email">البريد الإلكتروني</label>
-                                <input id="signup-email" type="email" placeholder="أدخل بريدك الإلكتروني" required class="form-input input-field"/>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-[#101418] text-base font-medium leading-normal pb-2" for="signup-password">كلمة المرور</label>
-                                <input id="signup-password" type="password" placeholder="اختر كلمة مرور قوية" required class="form-input input-field"/>
-                            </div>
-                             <div class="mb-4">
-                                <label class="block text-[#101418] text-base font-medium leading-normal pb-2" for="signup-academic-id">الرقم الأكاديمي</label>
-                                <input id="signup-academic-id" type="text" placeholder="أدخل رقمك الأكاديمي" required class="form-input input-field"/>
-                            </div>
-                            <div class="mb-6">
-                                <label class="block text-[#101418] text-base font-medium leading-normal pb-2" for="signup-admin-code-input">رمز المسؤول (اختياري)</label>
-                                <input id="signup-admin-code-input" type="text" placeholder="أدخل رمز المسؤول إن وجد" class="form-input input-field"/>
-                                <p class="text-xs text-gray-500 mt-1">سيتم تحديد دورك (admin/user) بناءً على هذا الرمز.</p>
-                            </div>
-                            <button type="submit" class="form-button w-full bg-[#1978e5] text-slate-50 hover:bg-blue-700">
-                                <span class="truncate">إنشاء الحساب</span>
-                            </button>
-                        </form>
-                        <p class="text-[#5c718a] text-sm font-normal leading-normal pt-4 text-center">
-                            لديك حساب بالفعل؟ <a href="#" data-target="login" class="nav-link text-[#1978e5] hover:underline">سجل الدخول</a>
-                        </p>
-                    </div>
-                </section>
-
-                <section id="forgot-password-section" class="content-section hidden-section px-5 md:px-20 lg:px-40 py-5 flex justify-center items-center min-h-[calc(100vh-140px)]">
-                    <div class="layout-content-container flex flex-col w-full max-w-md p-8 bg-white shadow-xl rounded-lg">
-                        <h2 class="text-[#101418] tracking-light text-[28px] font-bold leading-tight text-center pb-6">إعادة تعيين كلمة المرور</h2>
-                        <form id="forgot-password-form">
-                            <div class="mb-4">
-                                <label class="block text-[#101418] text-base font-medium leading-normal pb-2" for="forgot-password-email">البريد الإلكتروني</label>
-                                <input id="forgot-password-email" type="email" placeholder="أدخل بريدك الإلكتروني المسجل" required class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101418] focus:outline-0 focus:ring-2 focus:ring-[#1978e5] border border-[#d4dbe2] bg-gray-50 focus:border-[#1978e5] h-14 placeholder:text-[#5c718a] p-[15px] text-base font-normal leading-normal"/>
-                            </div>
-                            <button type="submit" class="flex w-full min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-4 bg-[#1978e5] text-slate-50 text-base font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors">
-                                <span class="truncate">إرسال رابط إعادة التعيين</span>
-                            </button>
-                        </form>
-                        <p class="text-[#5c718a] text-sm font-normal leading-normal pt-4 text-center">
-                            تذكرت كلمة المرور؟ <a href="#" data-target="login" class="nav-link text-[#1978e5] hover:underline">سجل الدخول</a>
-                        </p>
-                    </div>
-                </section>
-
-
-                <section id="profiles" class="content-section hidden-section px-5 md:px-20 lg:px-40 py-5">
-                    <div class="layout-content-container flex flex-col max-w-[960px] mx-auto">
-                        <div class="flex flex-wrap justify-between items-center gap-3 p-4">
-                            <p class="text-[#101418] tracking-light text-[32px] font-bold leading-tight min-w-72">الأعضاء المميزون</p>
-                        </div>
-                                                
-                        <div id="team-members-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-                            <div class="text-center p-4 text-gray-500 col-span-full">جاري تحميل ملفات الفريق...</div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="my-profile-section" class="content-section hidden-section px-5 md:px-20 lg:px-40 py-5">
-                     <div class="layout-content-container flex flex-col max-w-[960px] mx-auto">
-                        <div id="current-user-profile-form-container" class="mb-8 p-6 bg-white rounded-lg shadow">
-                            <h3 class="text-[#101418] text-xl font-bold leading-tight tracking-[-0.015em] mb-4">تحديث ملفك الشخصي</h3>
-                            <form id="update-profile-form" class="space-y-4">
-                                <div class="flex justify-center mb-4">
-                                     <img id="update-avatar-preview" src="https://placehold.co/100x100/E0E0E0/B0B0B0?text=Avatar" alt="Avatar Preview" class="avatar-preview">
-                                </div>
-                                <div>
-                                    <label for="update-avatar-file" class="block text-sm font-medium text-gray-700">الصورة الرمزية (ملف صورة)</label>
-                                    <input type="file" id="update-avatar-file" name="avatarFile" accept="image/*" class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1978e5] hover:file:bg-blue-100">
-                                </div>
-                                <div>
-                                    <label for="update-full-name" class="block text-sm font-medium text-gray-700">الاسم الكامل</label>
-                                    <input type="text" id="update-full-name" name="fullName" class="input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                </div>
-                                <div>
-                                    <label for="update-user-name" class="block text-sm font-medium text-gray-700">اسم المستخدم</label>
-                                    <input type="text" id="update-user-name" name="userName" class="input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                </div>
-                                <div>
-                                    <label for="update-academic-id" class="block text-sm font-medium text-gray-700">الرقم الأكاديمي</label>
-                                    <input type="text" id="update-academic-id" name="academicId" class="input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">الدور</label>
-                                    <p id="update-profile-role-display" class="mt-1 p-3 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 text-gray-700"></p>
-                                </div>
-                                <button type="submit" class="form-button w-full bg-[#1978e5] text-slate-50 hover:bg-blue-700">تحديث الملف الشخصي</button>
-                            </form>
-                        </div>
-                    </div>
-                </section>
-
-
-                <section id="events" class="content-section hidden-section px-5 md:px-20 lg:px-40 py-5">
-                    <div class="layout-content-container flex flex-col max-w-[960px] mx-auto">
-                        <div class="flex flex-wrap justify-between items-center gap-3 p-4">
-                            <p class="text-[#101418] tracking-light text-[32px] font-bold leading-tight min-w-72">فعاليات المشروع</p>
-                            <button id="create-event-btn" class="form-button bg-[#eaedf1] text-[#101418] hover:bg-gray-300">
-                                <span class="truncate">إنشاء فعالية</span>
-                            </button>
-                        </div>
-
-                        <div id="create-event-form-container" class="hidden-section p-6 bg-white rounded-lg shadow mb-8">
-                            <h2 id="event-form-title" class="text-[#101418] text-2xl font-bold mb-4">إنشاء فعالية جديدة</h2>
-                             <div class="flex justify-center mb-2">
-                                <img id="event-image-preview-edit" src="https://placehold.co/100x100/E0E0E0/B0B0B0?text=Event" alt="Event Image Preview" class="hidden-section">
-                            </div>
-                            <form id="create-event-form" class="space-y-4">
-                                <div>
-                                    <label for="event-title" class="block text-sm font-medium text-gray-700">عنوان الفعالية</label>
-                                    <input type="text" id="event-title" name="title" required class="input-field mt-1 block w-full">
-                                </div>
-                                <div>
-                                    <label for="event-description" class="block text-sm font-medium text-gray-700">وصف الفعالية</label>
-                                    <textarea id="event-description" name="description" rows="3" required class="input-field mt-1 block w-full"></textarea>
-                                </div>
-                                <div>
-                                    <label for="event-date" class="block text-sm font-medium text-gray-700">تاريخ الفعالية</label>
-                                    <input type="date" id="event-date" name="event_date" required class="input-field mt-1 block w-full">
-                                </div>
-                                <div>
-                                    <label for="event-image-file" class="block text-sm font-medium text-gray-700">صورة الفعالية (اختياري للتعديل)</label>
-                                    <input type="file" id="event-image-file" name="imageFile" accept="image/*" class="input-field mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-[#1978e5] hover:file:bg-blue-100">
-                                </div>
-                                <div class="flex gap-4">
-                                    <button type="submit" id="submit-event-form-btn" class="form-button flex-1 bg-[#1978e5] text-slate-50 hover:bg-blue-700">إنشاء</button>
-                                    <button type="button" id="cancel-create-event-btn" class="form-button flex-1 bg-gray-300 text-gray-700 hover:bg-gray-400">إلغاء</button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <h2 class="text-[#101418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">الفعاليات القادمة</h2>
-                        <div id="upcoming-events-list" class="p-4 space-y-6">
-                            <div class="text-center p-4 text-gray-500">جاري تحميل الفعاليات القادمة...</div>
-                        </div>
-
-                        <h2 class="text-[#101418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">الفعاليات السابقة</h2>
-                        <div id="past-events-list" class="p-4 space-y-6">
-                            <div class="text-center p-4 text-gray-500">جاري تحميل الفعاليات السابقة...</div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="event-details" class="content-section hidden-section px-5 md:px-20 lg:px-40 py-5">
-                    <div class="layout-content-container flex flex-col max-w-[960px] mx-auto">
-                        <div class="flex flex-wrap gap-2 p-4">
-                            <a href="#" class="nav-link text-[#4e7097] text-base font-medium leading-normal" data-target="events">الفعاليات</a>
-                            <span class="text-[#4e7097] text-base font-medium leading-normal">/</span>
-                            <span id="event-details-breadcrumb" class="text-[#0e141b] text-base font-medium leading-normal">تفاصيل الفعالية</span>
-                        </div>
-                        <div id="event-details-content" class="bg-white p-6 rounded-lg shadow-md">
-                            <div class="text-center p-4 text-gray-500">جاري تحميل تفاصيل الفعالية...</div>
-                        </div>
-
-                        <h2 class="text-[#0e141b] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">التعليقات</h2>
-                        <div id="event-comments-list" class="space-y-4 p-4 bg-white rounded-lg shadow-md mt-4">
-                            <div class="text-center p-4 text-gray-500">جاري تحميل التعليقات...</div>
-                        </div>
-
-                        <div id="add-comment-form-container" class="mt-6 p-4 bg-white rounded-lg shadow-md">
-                            <form id="add-comment-form" class="flex items-start gap-3">
-                                <img id="commenter-avatar" src="https://placehold.co/40x40/E0E0E0/B0B0B0?text=User" alt="User Avatar" class="size-10 rounded-full shrink-0 object-cover">
-                                <textarea id="comment-text" placeholder="أضف تعليقاً..." required class="form-input flex-1 resize-none rounded-lg border-gray-300 focus:ring-[#1978e5] focus:border-[#1978e5] p-3 text-base" rows="3"></textarea>
-                                <button type="submit" class="form-button self-end bg-[#1978e5] text-slate-50 h-12 px-6">نشر</button>
-                            </form>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="flash-feed" class="content-section hidden-section px-5 md:px-20 lg:px-40 py-5">
-                    <div class="layout-content-container flex flex-col max-w-[960px] mx-auto">
-                        <div class="flex flex-wrap justify-between items-center gap-3 p-4">
-                            <p class="text-[#101418] tracking-light text-[32px] font-bold leading-tight min-w-72">منشورات فلاش</p>
-                            <button id="create-flash-btn" class="form-button bg-[#eaedf1] text-[#101418] hover:bg-gray-300">
-                                <span class="truncate">إنشاء منشور فلاش</span>
-                            </button>
-                        </div>
-
-                        <div id="create-flash-form-container" class="hidden-section p-6 bg-white rounded-lg shadow mb-8">
-                            <h2 class="text-[#101418] text-2xl font-bold mb-4">إنشاء منشور فلاش جديد</h2>
-                            <form id="create-flash-form" class="space-y-4">
-                                <div>
-                                    <label for="flash-text" class="block text-sm font-medium text-gray-700">نص المنشور</label>
-                                    <textarea id="flash-text" name="text" rows="4" required class="input-field mt-1 block w-full"></textarea>
-                                </div>
-                                <div>
-                                    <label for="flash-password" class="block text-sm font-medium text-gray-700">كلمة مرور للمنشور (اختياري - <span class="text-red-500 font-bold">تحذير أمني!</span>)</label>
-                                    <input type="password" id="flash-password" name="password" class="input-field mt-1 block w-full">
-                                    <p class="text-xs text-red-600 mt-1">تحذير: حفظ كلمات المرور كنص عادي غير آمن. هذا الحقل لأغراض العرض فقط بناءً على الطلب.</p>
-                                </div>
-                                <div class="flex gap-4">
-                                    <button type="submit" class="form-button flex-1 bg-[#1978e5] text-slate-50 hover:bg-blue-700">نشر</button>
-                                    <button type="button" id="cancel-create-flash-btn" class="form-button flex-1 bg-gray-300 text-gray-700 hover:bg-gray-400">إلغاء</button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div id="flash-posts-list" class="space-y-6 p-4">
-                            <div class="text-center p-4 text-gray-500">جاري تحميل منشورات فلاش...</div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="contact" class="content-section hidden-section px-5 md:px-20 lg:px-40 py-10 text-center">
-                    <h2 class="text-[#0e141b] text-3xl font-bold mb-6">اتصل بنا</h2>
-                    <p class="text-[#0e141b] text-lg mb-4">
-                        إذا كانت لديك أي أسئلة أو اقتراحات، فلا تتردد في التواصل معنا.
-                    </p>
-                     <a href="mailto:MinaHanna@IEEE.ORG" class="form-button bg-[#1978e5] text-slate-50 hover:bg-blue-700 inline-flex items-center justify-center px-6 py-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-envelope-fill ml-2" viewBox="0 0 16 16">
-                          <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
-                        </svg>
-                        <span>اتصل بنا عبر البريد الإلكتروني</span>
-                    </a>
-                    <p class="text-gray-600 mt-4">أو تابعنا على وسائل التواصل الاجتماعي!</p>
-                </section>
-
-
-            </main>
-
-            <footer class="flex justify-center border-t border-solid border-t-[#e7edf3] bg-white">
-                <div class="flex max-w-[960px] flex-1 flex-col">
-                    <div class="flex flex-col gap-6 px-5 py-10 text-center @container">
-                        <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                            <a class="text-[#4e7097] text-base font-normal leading-normal min-w-40 hover:text-[#1978e5]" href="#">سياسة الخصوصية</a>
-                            <a class="text-[#4e7097] text-base font-normal leading-normal min-w-40 hover:text-[#1978e5]" href="#">شروط الخدمة</a>
-                            <a class="nav-link text-[#4e7097] text-base font-normal leading-normal min-w-40 hover:text-[#1978e5]" href="#" data-target="contact">اتصل بنا</a>
-                        </div>
-                        <div class="flex flex-wrap justify-center gap-4">
-                            <a href="#" aria-label="Twitter"><div class="text-[#4e7097] hover:text-[#1978e5]" data-icon="TwitterLogo" data-size="24px"><svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256"><path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"></path></svg></div></a>
-                            <a href="#" aria-label="Instagram"><div class="text-[#4e7097] hover:text-[#1978e5]" data-icon="InstagramLogo" data-size="24px"><svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"></path></svg></div></a>
-                        </div>
-                        <p class="text-[#4e7097] text-base font-normal leading-normal">@2025 فريق Flash. جميع الحقوق محفوظة.</p>
-                    </div>
-                </div>
-            </footer>
-        </div>
+                <button type="submit" id="submitBtn" class="submit-button">تحديث كلمة المرور</button>
+            </form>
+        </main>
+        <footer class="page-footer">
+            <p class="footer-text">
+                &copy; <script>document.write(new Date().getFullYear())</script> فريق Flash. جميع الحقوق محفوظة.
+            </p>
+        </footer>
     </div>
-
-    <div id="messageModal" class="modal hidden-section">
-        <div class="modal-content">
-            <p id="modalMessageText"></p>
-            <button id="modalCloseBtn" class="modal-close-btn">إغلاق</button>
-        </div>
-    </div>
-    
-    <div id="confirmModal" class="modal hidden-section">
-        <div class="modal-content">
-            <p id="confirmModalMessage" class="mb-4"></p>
-            <div class="flex justify-center gap-4">
-                <button id="confirmModalConfirmBtn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                    تأكيد
-                </button>
-                <button id="confirmModalCancelBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
-                    إلغاء
-                </button>
-            </div>
-        </div>
-    </div>
-
 
     <script>
-        // Supabase Credentials
         const SUPABASE_URL = 'https://uzcrjhhvwgllsdsvftuj.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6Y3JqaGh2d2dsbHNkc3ZmdHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyMTcxNzcsImV4cCI6MjA2Mzc5MzE3N30.wy_ei_ZVJoMGbXMVqrW8NVUEgk2-EvPQYpgb9gWMW18';
-        const ADMIN_SECRET_CODE = "FLASH_ADMIN_2024"; 
 
+        let supabaseClient = null; 
 
-        // --- Modal Elements (Declared early) ---
-        const messageModal = document.getElementById('messageModal');
-        const modalMessageText = document.getElementById('modalMessageText');
-        const modalCloseBtn = document.getElementById('modalCloseBtn');
-        const confirmModal = document.getElementById('confirmModal');
-        const confirmModalMessage = document.getElementById('confirmModalMessage');
-        const confirmModalConfirmBtn = document.getElementById('confirmModalConfirmBtn');
-        const confirmModalCancelBtn = document.getElementById('confirmModalCancelBtn');
-        let confirmCallback = null;
-        
-        // Function to show modal messages
-        function showModalMessage(message, isError = false) {
-            if (modalMessageText && messageModal) { // Check if elements exist
-                modalMessageText.textContent = message;
-                modalMessageText.className = isError ? 'text-red-600 font-semibold' : 'text-green-600 font-semibold';
-                messageModal.classList.remove('hidden-section');
+        function showMessage(element, message, type) {
+            if (!element) return; 
+            element.textContent = message;
+            element.className = 'message-area'; 
+            if (type !== 'none' && type !== '') { // Check for empty type as well
+                element.classList.add(type); 
+                element.style.display = 'block'; 
             } else {
-                console.error("Modal elements not found. Message:", message);
+                element.style.display = 'none';
             }
         }
-         function showConfirmModal(message, callback) {
-            confirmModalMessage.textContent = message;
-            confirmCallback = callback;
-            confirmModal.classList.remove('hidden-section');
-        }
 
-        if (modalCloseBtn) {
-            modalCloseBtn.addEventListener('click', () => {
-                if (messageModal) messageModal.classList.add('hidden-section');
-            });
-        }
-        if (confirmModalConfirmBtn) {
-            confirmModalConfirmBtn.addEventListener('click', () => {
-                if (confirmCallback) {
-                    confirmCallback();
+        if (typeof supabase !== 'undefined' && supabase && typeof supabase.createClient === 'function') {
+            if (SUPABASE_URL && SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY') {
+                try {
+                    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); 
+                } catch (error) {
+                    console.error("خطأ في تهيئة Supabase: ", error);
                 }
-                confirmModal.classList.add('hidden-section');
-                confirmCallback = null;
-            });
-        }
-        if (confirmModalCancelBtn) {
-            confirmModalCancelBtn.addEventListener('click', () => {
-                confirmModal.classList.add('hidden-section');
-                confirmCallback = null;
-            });
-        }
-
-
-        if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL === 'YOUR_SUPABASE_URL') { 
-            console.warn('Supabase URL and Anon Key might still be placeholders or missing if the hardcoded values are incorrect.');
-            if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
-                 showModalMessage('خطأ في الإعداد: يرجى التأكد من صحة Supabase URL و Anon Key.');
+            } else {
+                console.warn("قيم SUPABASE_URL أو SUPABASE_ANON_KEY غير صحيحة أو لا تزال تستخدم القيم المؤقتة.");
             }
+        } else {
+            console.error("مكتبة Supabase لم يتم تحميلها بشكل صحيح أو أن 'supabase.createClient' غير متوفر.");
         }
-        
-        const { createClient } = supabase;
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // Common styles for form inputs and buttons
-        const inputFieldStyles = "form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#101418] focus:outline-0 focus:ring-2 focus:ring-[#1978e5] border border-[#d4dbe2] bg-gray-50 focus:border-[#1978e5] h-14 placeholder:text-[#5c718a] p-[15px] text-base font-normal leading-normal";
-        const formButtonStyles = "flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-4 text-base font-bold leading-normal tracking-[0.015em] transition-colors";
-
-        document.querySelectorAll('.input-field').forEach(el => el.className = inputFieldStyles);
-        document.querySelectorAll('.form-button').forEach(el => el.className = `${formButtonStyles} ${el.className}`);
 
 
-        // --- Navigation ---
-        const navLinks = document.querySelectorAll('.nav-link');
-        const contentSections = document.querySelectorAll('.content-section');
-        let currentEventId = null; 
-        let currentUser = null; 
-        let initialAuthProcessed = false;
-        let pendingNavigationTarget = null;
-        const myProfileNavLink = document.getElementById('my-profile-nav-link');
-        let editingEventId = null; 
-        let currentEditingEventImageUrl = null; 
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('resetPasswordForm');
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const messageArea = document.getElementById('messageArea'); 
+            const submitButton = document.getElementById('submitBtn');
+
+            if (!supabaseClient && messageArea) {
+                 if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY' || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
+                    showMessage(messageArea, 'إعدادات الاتصال بـ Supabase غير مكتملة. لا يمكن تحديث كلمة المرور.', 'error');
+                 } else if (typeof supabase === 'undefined' || !supabase.createClient) {
+                     showMessage(messageArea, 'فشل تحميل مكتبة Supabase. لا يمكن تحديث كلمة المرور.', 'error');
+                 } else if (!messageArea.textContent) { 
+                    showMessage(messageArea, 'فشل تهيئة الاتصال بالخدمة. لا يمكن تحديث كلمة المرور.', 'error');
+                 }
+            }
+
+            // **الإضافة الجديدة: الاستماع لحدث استعادة كلمة المرور**
+            if (supabaseClient) {
+                supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                    if (event === 'PASSWORD_RECOVERY') {
+                        console.log('Supabase: تم التعرف على وضع استعادة كلمة المرور.');
+                        // يمكنك عرض رسالة معلوماتية هنا إذا أردت
+                        // showMessage(messageArea, 'جاهز لتحديث كلمة المرور. يرجى إدخال البيانات الجديدة.', 'info');
+                        // الـ SDK سيتعامل مع الـ session تلقائياً
+                    }
+                    // يمكنك إضافة تعامل مع أحداث أخرى إذا لزم الأمر، مثل SIGNED_IN
+                    // if (event === 'SIGNED_IN' && session) {
+                    //    console.log('Supabase: تم تسجيل الدخول، المستخدم:', session.user.email);
+                    // }
+                });
+            }
 
 
-        async function navigateTo(targetId, eventData = null) { 
-            contentSections.forEach(section => {
-                section.classList.add('hidden-section');
-            });
-            navLinks.forEach(link => {
-                link.classList.remove('nav-active');
-                if (link.dataset.target === targetId) {
-                    link.classList.add('nav-active');
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault(); 
+                submitButton.disabled = true; 
+                
+                // مسح الرسالة قبل كل محاولة إرسال جديدة
+                showMessage(messageArea, '', 'none'); 
+
+                const newPassword = newPasswordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+
+                if (!supabaseClient) { 
+                    showMessage(messageArea, 'فشل الاتصال بالخدمة. لا يمكن تحديث كلمة المرور.', 'error');
+                    submitButton.disabled = false;
+                    return;
                 }
-            });
 
-            const targetSection = document.getElementById(targetId);
-            if (targetSection) {
-                targetSection.classList.remove('hidden-section');
-                window.scrollTo(0, 0); 
-
-                if (targetId === 'profiles') {
-                    await loadProfiles(); 
+                if (newPassword.length === 0 || confirmPassword.length === 0) {
+                    showMessage(messageArea, 'يرجى ملء جميع الحقول.', 'error');
+                    submitButton.disabled = false;
+                    return;
                 }
-                if (targetId === 'my-profile-section') {
-                    const currentUserProfileForm = document.getElementById('current-user-profile-form-container');
-                    if (currentUser) { 
-                        currentUserProfileForm.classList.remove('hidden-section'); 
-                        await loadCurrentUserProfileData(); 
+
+                if (newPassword.length < 8) { 
+                    showMessage(messageArea, 'كلمة المرور يجب أن لا تقل عن 8 أحرف.', 'error');
+                    submitButton.disabled = false;
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    showMessage(messageArea, 'كلمتا المرور غير متطابقتين. يرجى التأكد والمحاولة مرة أخرى.', 'error');
+                    submitButton.disabled = false;
+                    return;
+                }
+
+                try {
+                    const { data, error } = await supabaseClient.auth.updateUser({
+                        password: newPassword
+                    });
+
+                    if (error) {
+                        console.error('Supabase error:', error);
+                        let friendlyErrorMessage = 'حدث خطأ أثناء تحديث كلمة المرور.';
+                        if (error.message.includes("Password should be at least")) {
+                             friendlyErrorMessage = 'كلمة المرور ضعيفة جداً أو لا تستوفي المتطلبات. يرجى اختيار كلمة مرور أقوى.';
+                        } else if (error.message.includes("same as the old password")) {
+                             friendlyErrorMessage = 'كلمة المرور الجديدة يجب أن تكون مختلفة عن كلمة المرور القديمة.';
+                        } else if (error.message.includes("Invalid token") || error.message.includes("expired") || error.message.includes("Auth session missing") || error.message.includes("Invalid Refresh Token")) {
+                             friendlyErrorMessage = 'رابط إعادة تعيين كلمة المرور غير صالح، انتهت صلاحيته، أو أن الجلسة غير موجودة. يرجى طلب رابط جديد أو التأكد من أنك تستخدم الرابط الصحيح.';
+                        }
+                        showMessage(messageArea, friendlyErrorMessage, 'error');
                     } else {
-                        currentUserProfileForm.classList.add('hidden-section');
-                        navigateTo('login'); 
+                        showMessage(messageArea, 'تم تحديث كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.', 'success');
+                        form.reset(); 
+                        // setTimeout(() => { window.location.href = '/login'; }, 3000);
                     }
+                } catch (catchError) {
+                    console.error('Catch error:', catchError);
+                    showMessage(messageArea, 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.', 'error');
+                } finally {
+                    submitButton.disabled = false; 
                 }
-                if (targetId === 'events') await loadEvents();
-                if (targetId === 'event-details' && eventData) {
-                    currentEventId = eventData.id; 
-                    await loadEventDetails(eventData);
-                }
-                if (targetId === 'flash-feed') await loadFlashPosts();
-
-            } else {
-                console.error(`Section with id "${targetId}" not found.`);
-                document.getElementById('home').classList.remove('hidden-section'); 
-            }
-        }
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = e.currentTarget.dataset.target;
-                navigateTo(targetId); 
             });
         });
-        
-
-        // --- Authentication ---
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const authLinks = document.getElementById('auth-links');
-        const userInfoDisplay = document.getElementById('user-info');
-        const userNameNav = document.getElementById('user-name-nav');
-        const userAvatarNav = document.getElementById('user-avatar-nav');
-        const navLogoutBtn = document.getElementById('nav-logout-btn');
-        const navLoginBtn = document.getElementById('nav-login-btn');
-        const navSignupBtn = document.getElementById('nav-signup-btn');
-        const commenterAvatar = document.getElementById('commenter-avatar');
-        const forgotPasswordForm = document.getElementById('forgot-password-form');
-
-
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-
-            if (error) {
-                showModalMessage(`خطأ في تسجيل الدخول: ${error.message}`, true);
-            } else if (data.user) {
-                showModalMessage('تم تسجيل الدخول بنجاح!');
-                navigateTo('home'); 
-            } else {
-                 showModalMessage('فشل تسجيل الدخول. الرجاء المحاولة مرة أخرى.', true);
-            }
-        });
-
-        signupForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            const fullName = document.getElementById('signup-fullname').value;
-            const userName = document.getElementById('signup-username').value;
-            const academicId = document.getElementById('signup-academic-id').value;
-            const enteredAdminCode = document.getElementById('signup-admin-code-input').value;
-            
-            let assignedRole = 'user';
-            if (enteredAdminCode === ADMIN_SECRET_CODE) {
-                assignedRole = 'admin';
-            }
-
-
-            const { data: authData, error: authError } = await _supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: { 
-                        full_name: fullName,
-                        user_name: userName,
-                    }
-                }
-            });
-
-            if (authError) {
-                showModalMessage(`خطأ في إنشاء الحساب: ${authError.message}`, true);
-            } else if (authData.user) {
-                const { error: profileError } = await _supabase
-                    .from('profiles')
-                    .insert({
-                        id: authData.user.id, 
-                        full_name: fullName,
-                        User_Name: userName, 
-                        academic_id: academicId,
-                        role: assignedRole, // Use the determined role
-                        email: authData.user.email, // Store email in profiles table
-                        avatar_url: `https://placehold.co/100x100/E0E0E0/B0B0B0?text=${userName.substring(0,1).toUpperCase()}` 
-                    });
-
-                if (profileError) {
-                    showModalMessage(`تم إنشاء الحساب ولكن فشل إنشاء الملف الشخصي: ${profileError.message}`, true);
-                } else {
-                    showModalMessage('تم إنشاء الحساب والملف الشخصي بنجاح! يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب.');
-                    navigateTo('home'); 
-                }
-            }
-        });
-        
-        navLogoutBtn.addEventListener('click', async () => {
-            const { error } = await _supabase.auth.signOut();
-            if (error) {
-                showModalMessage(`خطأ في تسجيل الخروج: ${error.message}`, true);
-            } else {
-                showModalMessage('تم تسجيل الخروج بنجاح.');
-                navigateTo('home');
-            }
-        });
-
-        forgotPasswordForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('forgot-password-email').value;
-            // The redirectTo URL should be where your app handles the password update after the user clicks the email link.
-            // This URL must be whitelisted in your Supabase project's email template settings and Site URL / Additional Redirect URLs.
-            const redirectTo = 'https://minal0p.github.io/Flash-Team-Reset-Password/'; 
-
-            const { error } = await _supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: redirectTo,
-            });
-
-            if (error) {
-                console.error('خطأ في إرسال إيميل إعادة التعيين:', error.message);
-                showModalMessage(`خطأ في إرسال رابط إعادة التعيين: ${error.message}`, true);
-            } else {
-                console.log('تم إرسال طلب إعادة تعيين كلمة المرور بنجاح!');
-                showModalMessage('إذا كان البريد الإلكتروني موجودًا، فسيتم إرسال رابط إعادة تعيين كلمة المرور إليه. يرجى التحقق من صندوق الوارد الخاص بك.');
-                navigateTo('login'); // Navigate back to login page after request
-            }
-        });
-
-
-        async function updateAuthState(user) {
-            const myProfileNavLink = document.getElementById('my-profile-nav-link');
-            const updateProfileFormContainer = document.getElementById('current-user-profile-form-container'); 
-
-            if (user) {
-                authLinks.className = 'hidden-section items-center gap-4'; 
-                navSignupBtn.classList.add('hidden-section'); 
-                navLoginBtn.classList.add('hidden-section'); 
-                myProfileNavLink.classList.remove('hidden-section');
-
-                userInfoDisplay.className = 'flex items-center gap-3'; 
-
-                const { data: profile, error } = await _supabase
-                    .from('profiles')
-                    .select('full_name, avatar_url')
-                    .eq('id', user.id)
-                    .single();
-
-                if (profile) {
-                    userNameNav.textContent = profile.full_name || user.email;
-                    userAvatarNav.src = profile.avatar_url || 'https://placehold.co/40x40/E0E0E0/B0B0B0?text=User';
-                    commenterAvatar.src = profile.avatar_url || 'https://placehold.co/40x40/E0E0E0/B0B0B0?text=User';
-                } else {
-                    userNameNav.textContent = user.email; 
-                    userAvatarNav.src = 'https://placehold.co/40x40/E0E0E0/B0B0B0?text=User';
-                    commenterAvatar.src = 'https://placehold.co/40x40/E0E0E0/B0B0B0?text=User';
-                }
-                
-                const myProfileSection = document.getElementById('my-profile-section');
-                if (myProfileSection && !myProfileSection.classList.contains('hidden-section')) {
-                    if (updateProfileFormContainer) updateProfileFormContainer.classList.remove('hidden-section');
-                    await loadCurrentUserProfileData(); 
-                }
-
-
-            } else {
-                authLinks.className = 'flex items-center gap-4'; 
-                navSignupBtn.classList.remove('hidden-section'); 
-                navLoginBtn.classList.remove('hidden-section'); 
-                myProfileNavLink.classList.add('hidden-section');
-
-
-                userInfoDisplay.className = 'hidden-section items-center gap-3'; 
-                userNameNav.textContent = '';
-                userAvatarNav.src = 'https://placehold.co/40x40/E0E0E0/B0B0B0?text=User';
-                commenterAvatar.src = 'https://placehold.co/40x40/E0E0E0/B0B0B0?text=User';
-                if (updateProfileFormContainer) updateProfileFormContainer.classList.add('hidden-section');
-            }
-        }
-        
-        _supabase.auth.onAuthStateChange(async (event, session) => { 
-            currentUser = session?.user || null; 
-            await updateAuthState(currentUser);
-
-            if (!initialAuthProcessed) {
-                initialAuthProcessed = true;
-                if (pendingNavigationTarget) {
-                    navigateTo(pendingNavigationTarget.targetId, pendingNavigationTarget.eventData);
-                    pendingNavigationTarget = null;
-                } else {
-                    navigateTo('home'); 
-                }
-            }
-        });
-
-        // --- Profiles ---
-        const teamMembersListContainer = document.getElementById('team-members-list'); 
-        const updateProfileForm = document.getElementById('update-profile-form');
-        const updateAvatarPreview = document.getElementById('update-avatar-preview');
-        const updateAvatarFile = document.getElementById('update-avatar-file');
-
-        updateAvatarFile.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    updateAvatarPreview.src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        async function loadCurrentUserProfileData() {
-            if (!currentUser) { 
-                console.error('No user logged in for profile data.');
-                document.getElementById('current-user-profile-form-container').classList.add('hidden-section');
-                return;
-            }
-            document.getElementById('current-user-profile-form-container').classList.remove('hidden-section');
-
-
-            const { data: profile, error } = await _supabase
-                .from('profiles')
-                .select('full_name, User_Name, academic_id, role, avatar_url')
-                .eq('id', currentUser.id)
-                .single();
-
-            if (error) {
-                console.error('Error fetching current user profile:', error);
-                return;
-            }
-
-            if (profile) {
-                document.getElementById('update-full-name').value = profile.full_name || '';
-                document.getElementById('update-user-name').value = profile.User_Name || '';
-                document.getElementById('update-academic-id').value = profile.academic_id || '';
-                document.getElementById('update-profile-role-display').textContent = profile.role || 'غير محدد';
-                updateAvatarPreview.src = profile.avatar_url || 'https://placehold.co/100x100/E0E0E0/B0B0B0?text=Avatar';
-            }
-        }
-
-
-        updateProfileForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!currentUser) { 
-                showModalMessage('يجب تسجيل الدخول لتحديث الملف الشخصي.', true);
-                return;
-            }
-
-            const fullName = document.getElementById('update-full-name').value;
-            const userName = document.getElementById('update-user-name').value;
-            const academicId = document.getElementById('update-academic-id').value;
-            // Role is not updated from this form
-            const avatarFile = document.getElementById('update-avatar-file').files[0];
-
-            let avatarUrl = updateAvatarPreview.src; 
-
-            if (avatarFile) {
-                const fileName = `${currentUser.id}/${Date.now()}-${avatarFile.name.replace(/\s+/g, '_')}`; 
-                const { data: uploadData, error: uploadError } = await _supabase.storage
-                    .from('personal-image') 
-                    .upload(fileName, avatarFile, {
-                        cacheControl: '3600',
-                        upsert: true 
-                    });
-
-                if (uploadError) {
-                    showModalMessage(`فشل رفع الصورة الرمزية: ${uploadError.message}`, true);
-                    return;
-                }
-                const { data: urlData } = _supabase.storage.from('personal-image').getPublicUrl(fileName);
-                avatarUrl = urlData.publicUrl;
-            }
-            
-            const updates = {
-                full_name: fullName,
-                User_Name: userName, 
-                academic_id: academicId,
-                avatar_url: avatarUrl,
-                updated_at: new Date().toISOString()
-            };
-
-            const { error: updateError } = await _supabase
-                .from('profiles')
-                .update(updates)
-                .eq('id', currentUser.id);
-
-            if (updateError) {
-                showModalMessage(`فشل تحديث الملف الشخصي: ${updateError.message}`, true);
-            } else {
-                showModalMessage('تم تحديث الملف الشخصي بنجاح!');
-                await updateAuthState(currentUser); 
-            }
-        });
-
-
-        function createProfileCard(profile, isSpecial = false) { 
-            const cardClasses = isSpecial 
-                ? "flex flex-col gap-3 text-center pb-3 bg-white p-4 rounded-lg shadow-md border-2 border-yellow-400" 
-                : "flex flex-col gap-3 text-center pb-3 bg-white p-4 rounded-lg shadow-md";
-
-            return `
-                <div class="${cardClasses}">
-                    <div class="px-4">
-                        <img src="${profile.avatar_url || 'https://placehold.co/150x150/E0E0E0/B0B0B0?text=?'}" alt="${profile.full_name || 'Profile'}" class="w-full aspect-square bg-cover rounded-full object-cover mx-auto max-w-[150px]">
-                    </div>
-                    <div>
-                        <p class="text-[#101418] text-base font-medium leading-normal">
-                            ${profile.full_name || 'غير متوفر'}
-                            ${isSpecial ? '<span class="ml-1 text-yellow-500">⭐</span>' : ''}
-                        </p>
-                        <p class="text-[#5c718a] text-sm font-normal leading-normal">
-                            الرقم الأكاديمي: ${profile.academic_id || 'N/A'}<br>
-                            الدور: ${profile.role || 'N/A'}<br>
-                            اسم المستخدم: ${profile.User_Name || 'N/A'}
-                        </p>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function loadProfiles() {
-            const teamMembersContainer = document.getElementById('team-members-list');
-            if (!teamMembersContainer) {
-                console.error("Profile container 'team-members-list' not found in DOM during loadProfiles.");
-                teamMembersContainer.innerHTML = '<p class="text-red-500 col-span-full">خطأ: لم يتم العثور على حاوية عرض الأعضاء.</p>';
-                return; 
-            }
-            teamMembersContainer.innerHTML = '<div class="text-center p-4 text-gray-500 col-span-full">جاري تحميل ملفات الفريق...</div>';
-            
-            const currentAuthUserId = currentUser?.id; 
-            const specialCode = "MimaOmarMena"; 
-
-            const { data: allProfiles, error } = await _supabase
-                .from('profiles')
-                .select('*'); // Select all profiles
-
-
-            if (error) {
-                console.error('Error fetching profiles:', error);
-                teamMembersContainer.innerHTML = '<p class="text-red-500 col-span-full">فشل تحميل الملفات.</p>';
-                return;
-            }
-            
-            // Filter profiles where their email (from the profiles table) contains the special code.
-            // This assumes you have an 'email' column in your 'profiles' table.
-            // If the email is only in auth.users, you'd need a join or a different approach.
-            const profilesToDisplay = allProfiles.filter(profile => {
-                // It's crucial that your 'profiles' table has an 'email' column for this to work
-                // Or, if 'user_id' in 'profiles' is a foreign key to 'auth.users.id', you'd need to join.
-                // For now, assuming 'email' is directly in 'profiles' table.
-                // If not, you will need to adjust the schema or the query.
-                // A common pattern is to store the email in the profiles table when the user signs up.
-                return profile.email && typeof profile.email === 'string' && profile.email.toLowerCase().includes(specialCode.toLowerCase());
-            });
-
-
-            if (!profilesToDisplay || profilesToDisplay.length === 0) {
-                const noMembersMsg = `<p class="text-gray-500 col-span-full">لم يتم العثور على أعضاء مميزين بالرمز "${specialCode}" في البريد الإلكتروني.</p>`;
-                teamMembersContainer.innerHTML = noMembersMsg;
-                return;
-            }
-
-            teamMembersContainer.innerHTML = profilesToDisplay.map(p => createProfileCard(p, true)).join(''); 
-        }
-        
-
-        // --- Events ---
-        const upcomingEventsList = document.getElementById('upcoming-events-list');
-        const pastEventsList = document.getElementById('past-events-list');
-        const eventDetailsContent = document.getElementById('event-details-content');
-        const eventCommentsList = document.getElementById('event-comments-list');
-        const addCommentForm = document.getElementById('add-comment-form');
-        const createEventBtn = document.getElementById('create-event-btn');
-        const createEventFormContainer = document.getElementById('create-event-form-container');
-        const createEventForm = document.getElementById('create-event-form');
-        const cancelCreateEventBtn = document.getElementById('cancel-create-event-btn');
-        const eventFormTitle = document.getElementById('event-form-title');
-        const submitEventFormBtn = document.getElementById('submit-event-form-btn');
-        const eventImagePreviewEdit = document.getElementById('event-image-preview-edit');
-
-
-        createEventBtn.addEventListener('click', () => {
-            editingEventId = null; // Ensure we are in "create" mode
-            currentEditingEventImageUrl = null;
-            eventFormTitle.textContent = 'إنشاء فعالية جديدة';
-            submitEventFormBtn.textContent = 'إنشاء';
-            createEventForm.reset(); // Clear form fields
-            eventImagePreviewEdit.classList.add('hidden-section'); // Hide preview for new event
-            eventImagePreviewEdit.src = '';
-            createEventFormContainer.classList.remove('hidden-section');
-            createEventBtn.classList.add('hidden-section');
-        });
-
-        cancelCreateEventBtn.addEventListener('click', () => {
-            createEventFormContainer.classList.add('hidden-section');
-            createEventBtn.classList.remove('hidden-section');
-            createEventForm.reset();
-            editingEventId = null;
-            currentEditingEventImageUrl = null;
-            eventFormTitle.textContent = 'إنشاء فعالية جديدة';
-            submitEventFormBtn.textContent = 'إنشاء';
-            eventImagePreviewEdit.classList.add('hidden-section');
-            eventImagePreviewEdit.src = '';
-        });
-
-        createEventForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!currentUser) { 
-                showModalMessage('يجب تسجيل الدخول لإنشاء أو تعديل فعالية.', true);
-                navigateTo('login');
-                return;
-            }
-
-            const title = document.getElementById('event-title').value;
-            const description = document.getElementById('event-description').value;
-            const event_date = document.getElementById('event-date').value;
-            const imageFile = document.getElementById('event-image-file').files[0];
-            let imageUrl = editingEventId ? currentEditingEventImageUrl : null; // Keep old image if not changed during edit
-
-            if (imageFile) { // If a new image is selected
-                // If editing and there was an old image, delete it first
-                if (editingEventId && currentEditingEventImageUrl) {
-                    try {
-                        const oldFileName = currentEditingEventImageUrl.split('/').pop();
-                        if (oldFileName) {
-                             await _supabase.storage.from('events-images').remove([oldFileName]);
-                        }
-                    } catch (storageError) {
-                        console.warn("Could not delete old event image from storage:", storageError);
-                    }
-                }
-
-                const fileName = `event_${currentUser.id}_${Date.now()}_${imageFile.name.replace(/\s+/g, '_')}`;
-                const { data: uploadData, error: uploadError } = await _supabase.storage
-                    .from('events-images') 
-                    .upload(fileName, imageFile, {
-                        cacheControl: '3600',
-                        upsert: false 
-                    });
-                
-                if (uploadError) {
-                    showModalMessage(`فشل رفع صورة الفعالية: ${uploadError.message}`, true);
-                    return;
-                }
-                const { data: urlData } = _supabase.storage.from('events-images').getPublicUrl(fileName);
-                imageUrl = urlData.publicUrl;
-            }
-
-            const eventDataPayload = {
-                title,
-                description,
-                event_date,
-                image_url: imageUrl,
-                user_id: currentUser.id 
-            };
-
-            let operationError = null;
-            if (editingEventId) {
-                const updatePayload = { title, description, event_date, image_url: imageUrl, updated_at: new Date().toISOString() };
-                const { error } = await _supabase
-                    .from('project_events')
-                    .update(updatePayload)
-                    .eq('id', editingEventId)
-                    .eq('user_id', currentUser.id); 
-                operationError = error;
-            } else {
-                const { error } = await _supabase.from('project_events').insert(eventDataPayload);
-                operationError = error;
-            }
-
-
-            if (operationError) {
-                showModalMessage(`فشل ${editingEventId ? 'تحديث' : 'إنشاء'} الفعالية: ${operationError.message}`, true);
-            } else {
-                showModalMessage(`تم ${editingEventId ? 'تحديث' : 'إنشاء'} الفعالية بنجاح!`);
-                createEventForm.reset();
-                eventFormTitle.textContent = 'إنشاء فعالية جديدة';
-                submitEventFormBtn.textContent = 'إنشاء';
-                eventImagePreviewEdit.classList.add('hidden-section');
-                eventImagePreviewEdit.src = '';
-                createEventFormContainer.classList.add('hidden-section');
-                createEventBtn.classList.remove('hidden-section');
-                editingEventId = null; 
-                currentEditingEventImageUrl = null;
-                loadEvents(); 
-            }
-        });
-
-        function createEventCard(eventItem, isUpcoming = true) {
-            const eventDate = new Date(eventItem.event_date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
-            const reactionTypes = [
-                { type: 'like', emoji: '👍', label: 'أعجبني' },
-                { type: 'love', emoji: '❤️', label: 'أحببته' },
-                { type: 'sad', emoji: '😢', label: 'أحزنني' }
-            ];
-
-            let reactionButtonsHTML = '';
-            reactionTypes.forEach(rt => {
-                reactionButtonsHTML += `
-                    <button class="reaction-btn p-1 rounded-full hover:bg-gray-200 focus:outline-none" data-eventid="${eventItem.id}" data-reactiontype="${rt.type}" aria-label="${rt.label}">
-                        <span id="${rt.type}-icon-${eventItem.id}" class="text-xl">${rt.emoji}</span>
-                    </button>
-                    <span id="${rt.type}-count-${eventItem.id}" class="text-xs text-slate-500 mr-1">0</span>
-                `;
-            });
-            
-            let ownerControlsHTML = '';
-            if (currentUser && currentUser.id === eventItem.user_id) {
-                ownerControlsHTML = `
-                    <button class="edit-event-btn text-xs bg-yellow-400 hover:bg-yellow-500 text-black py-1 px-2 rounded mr-2" data-eventid="${eventItem.id}">تعديل</button>
-                    <button class="delete-event-btn text-xs bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded" data-eventid="${eventItem.id}" data-imageurl="${eventItem.image_url || ''}">حذف</button>
-                `;
-            }
-
-
-            const cardHTML = `
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div class="md:flex">
-                        <div class="md:shrink-0 md:w-1/3">
-                            <img class="h-48 w-full object-cover md:h-full event-image" src="${eventItem.image_url || 'https://placehold.co/400x300/64748B/E0E7FF?text=Event+Image'}" alt="${eventItem.title}">
-                        </div>
-                        <div class="p-6 md:w-2/3 flex flex-col justify-between">
-                            <div>
-                                <div class="uppercase tracking-wide text-sm text-[#1978e5] font-semibold">${eventDate}</div>
-                                <a href="#" class="block mt-1 text-lg leading-tight font-medium text-black hover:underline event-details-link" data-eventid="${eventItem.id}">${eventItem.title}</a>
-                                <p class="mt-2 text-slate-600 text-sm">${eventItem.description ? eventItem.description.substring(0, 150) + (eventItem.description.length > 150 ? '...' : '') : 'لا يوجد وصف متاح.'}</p>
-                            </div>
-                             <div class="mt-2">
-                                ${ownerControlsHTML}
-                            </div>
-                            <div class="mt-4 flex justify-between items-center">
-                                <button class="event-details-link text-sm font-medium text-[#1978e5] hover:text-blue-700 py-2 px-3 rounded-md bg-blue-50 hover:bg-blue-100 transition" data-eventid="${eventItem.id}">
-                                    ${isUpcoming ? 'معرفة المزيد' : 'عرض التفاصيل'}
-                                </button>
-                                <div class="flex items-center gap-2 text-slate-500 text-xs">
-                                    ${reactionButtonsHTML}
-                                    <button class="toggle-comment-btn p-1 rounded-full hover:bg-gray-200 focus:outline-none" data-eventid="${eventItem.id}" aria-label="تعليق">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots text-gray-400" viewBox="0 0 16 16"><path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/> <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z"/></svg>
-                                    </button>
-                                    <span id="comments-count-${eventItem.id}">0</span>
-                                </div>
-                            </div>
-                            <div id="quick-comment-container-${eventItem.id}" class="hidden-section p-2 border-t mt-2">
-                                <textarea id="quick-comment-text-${eventItem.id}" class="w-full p-2 border rounded-md text-sm focus:ring-blue-500 focus:border-blue-500" rows="2" placeholder="اكتب تعليقاً سريعاً..."></textarea>
-                                <button class="post-quick-comment-btn mt-1 text-xs bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600" data-eventid="${eventItem.id}">نشر التعليق</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-            
-            fetchEventCounts(eventItem.id);
-            checkUserReaction(eventItem.id); 
-            return cardHTML;
-        }
-        
-        async function fetchEventCounts(eventId, forDetails = false) {
-            const suffix = forDetails ? '-details' : '';
-            const reactionTypes = ['like', 'love', 'sad'];
-            for (const type of reactionTypes) {
-                const { count, error } = await _supabase
-                    .from('event_reactions')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('event_id', eventId)
-                    .eq('reaction_type', type);
-                
-                const countElement = document.getElementById(`${type}-count${suffix}-${eventId}`);
-                if (!error && countElement) {
-                    countElement.textContent = count || 0;
-                }
-            }
-
-            const { count: commentsCount, error: commentsError } = await _supabase
-                .from('event_comments')
-                .select('*', { count: 'exact', head: true })
-                .eq('event_id', eventId);
-
-            const commentCountElement = document.getElementById(`comments-count${suffix}-${eventId}`);
-            if (!commentsError && commentCountElement) {
-                commentCountElement.textContent = commentsCount || 0;
-            }
-        }
-
-        async function checkUserReaction(eventId, forDetails = false) {
-            if (!currentUser) return; 
-            const suffix = forDetails ? '-details' : '';
-
-            const { data: userReaction, error } = await _supabase
-                .from('event_reactions')
-                .select('reaction_type')
-                .eq('event_id', eventId)
-                .eq('user_id', currentUser.id)
-                .maybeSingle(); 
-
-            const reactionTypes = ['like', 'love', 'sad'];
-            reactionTypes.forEach(type => {
-                const iconElement = document.getElementById(`${type}-icon${suffix}-${eventId}`);
-                if (iconElement) {
-                    iconElement.classList.remove('selected', 'text-blue-600', 'text-red-600', 'text-yellow-500'); 
-                    // iconElement.classList.add('text-gray-400'); // Reset to default color if needed, or rely on CSS
-                }
-            });
-
-            if (!error && userReaction && userReaction.reaction_type) {
-                const activeIconElement = document.getElementById(`${userReaction.reaction_type}-icon${suffix}-${eventId}`);
-                if (activeIconElement) {
-                    activeIconElement.classList.add('selected');
-                    // activeIconElement.classList.remove('text-gray-400'); // Remove default if applied
-                    if(userReaction.reaction_type === 'like') activeIconElement.classList.add('text-blue-600');
-                    if(userReaction.reaction_type === 'love') activeIconElement.classList.add('text-red-600');
-                    if(userReaction.reaction_type === 'sad') activeIconElement.classList.add('text-yellow-500'); 
-                }
-            }
-        }
-
-
-        async function handleReaction(eventId, reactionType, fromDetails = false) {
-            if (!currentUser) { 
-                showModalMessage('يجب تسجيل الدخول للتفاعل.', true);
-                navigateTo('login');
-                return;
-            }
-
-            const { data: existingReaction, error: fetchError } = await _supabase
-                .from('event_reactions')
-                .select('id, reaction_type')
-                .eq('event_id', eventId)
-                .eq('user_id', currentUser.id)
-                .maybeSingle(); 
-
-            if (fetchError) {
-                showModalMessage(`خطأ في التحقق من التفاعل: ${fetchError.message}`, true);
-                return;
-            }
-
-            if (existingReaction) { 
-                if (existingReaction.reaction_type === reactionType) { 
-                    const { error: deleteError } = await _supabase
-                        .from('event_reactions')
-                        .delete()
-                        .match({ id: existingReaction.id });
-                    if (deleteError) {
-                        showModalMessage(`فشل إلغاء التفاعل: ${deleteError.message}`, true);
-                    }
-                } else { 
-                    const { error: updateError } = await _supabase
-                        .from('event_reactions')
-                        .update({ reaction_type: reactionType, created_at: new Date().toISOString() })
-                        .match({ id: existingReaction.id });
-                    if (updateError) {
-                        showModalMessage(`فشل تحديث التفاعل: ${updateError.message}`, true);
-                    }
-                }
-            } else { 
-                const { error: insertError } = await _supabase
-                    .from('event_reactions')
-                    .insert({ event_id: eventId, user_id: currentUser.id, reaction_type: reactionType });
-                if (insertError) {
-                    showModalMessage(`فشل إضافة التفاعل: ${insertError.message}`, true);
-                     console.error("Insert reaction error (check RLS policies and unique constraints for event_reactions):", insertError);
-                }
-            }
-            
-            await fetchEventCounts(eventId, fromDetails); 
-            await checkUserReaction(eventId, fromDetails); 
-            
-            if (fromDetails) {
-                 await fetchEventCounts(eventId, false); 
-                 await checkUserReaction(eventId, false);
-            } else {
-                 await fetchEventCounts(eventId, true); 
-                 await checkUserReaction(eventId, true);
-            }
-        }
-
-        function toggleQuickComment(eventId) {
-            const container = document.getElementById(`quick-comment-container-${eventId}`);
-            if (container) {
-                container.classList.toggle('hidden-section');
-            }
-        }
-
-        async function postQuickComment(eventId) {
-            if (!currentUser) { 
-                showModalMessage('يجب تسجيل الدخول للتعليق.', true);
-                navigateTo('login');
-                return;
-            }
-            
-            const commentTextElement = document.getElementById(`quick-comment-text-${eventId}`);
-            const commentText = commentTextElement.value;
-
-            if (!commentText.trim()) {
-                showModalMessage('لا يمكن إرسال تعليق فارغ.', true);
-                return;
-            }
-
-            const { data: profile, error: profileError } = await _supabase
-                .from('profiles')
-                .select('full_name')
-                .eq('id', currentUser.id)
-                .single();
-
-            if (profileError || !profile) {
-                showModalMessage('فشل في جلب معلومات المعلق.', true);
-                return;
-            }
-
-            const { error: insertError } = await _supabase.from('event_comments').insert({
-                event_id: eventId,
-                user_id: currentUser.id,
-                commenter_name: profile.full_name,
-                commenter_email: currentUser.email, 
-                comment_text: commentText
-            });
-
-            if (insertError) {
-                showModalMessage(`فشل إضافة التعليق: ${insertError.message}`, true);
-            } else {
-                showModalMessage('تم إضافة التعليق بنجاح!');
-                commentTextElement.value = ''; 
-                toggleQuickComment(eventId); 
-                fetchEventCounts(eventId); 
-                fetchEventCounts(eventId, true); // Also update details if open
-            }
-        }
-
-
-        async function loadEvents() {
-            upcomingEventsList.innerHTML = '<div class="text-center p-4 text-gray-500 col-span-full">جاري تحميل الفعاليات القادمة...</div>';
-            pastEventsList.innerHTML = '<div class="text-center p-4 text-gray-500 col-span-full">جاري تحميل الفعاليات السابقة...</div>';
-
-            const { data: events, error } = await _supabase.from('project_events').select('*').order('event_date', { ascending: false });
-
-            if (error) {
-                console.error('Error fetching events:', error);
-                upcomingEventsList.innerHTML = '<p class="text-red-500 col-span-full">فشل تحميل الفعاليات.</p>';
-                pastEventsList.innerHTML = '<p class="text-red-500 col-span-full">فشل تحميل الفعاليات.</p>';
-                return;
-            }
-
-            const today = new Date().toISOString().split('T')[0]; 
-            const upcoming = events.filter(e => e.event_date >= today);
-            const past = events.filter(e => e.event_date < today);
-
-            upcomingEventsList.innerHTML = upcoming.length ? upcoming.map(e => createEventCard(e, true)).join('') : '<p class="text-gray-600">لا توجد فعاليات قادمة حالياً.</p>';
-            pastEventsList.innerHTML = past.length ? past.map(e => createEventCard(e, false)).join('') : '<p class="text-gray-600">لا توجد فعاليات سابقة.</p>';
-            
-            document.querySelectorAll('.event-details-link').forEach(link => {
-                link.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    const eventId = e.currentTarget.dataset.eventid;
-                    const { data: eventData, error: fetchError } = await _supabase
-                        .from('project_events')
-                        .select('*')
-                        .eq('id', eventId)
-                        .single();
-                    if (fetchError) {
-                        showModalMessage(`فشل تحميل تفاصيل الفعالية: ${fetchError.message}`, true);
-                    } else if (eventData) {
-                        navigateTo('event-details', eventData);
-                    }
-                });
-            });
-
-            document.querySelectorAll('.reaction-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const eventId = e.currentTarget.dataset.eventid;
-                    const reactionType = e.currentTarget.dataset.reactiontype;
-                    handleReaction(eventId, reactionType, false); 
-                });
-            });
-            document.querySelectorAll('.toggle-comment-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const eventId = e.currentTarget.dataset.eventid;
-                    toggleQuickComment(eventId);
-                });
-            });
-            document.querySelectorAll('.post-quick-comment-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const eventId = e.currentTarget.dataset.eventid;
-                    postQuickComment(eventId);
-                });
-            });
-            document.querySelectorAll('.edit-event-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const eventId = e.currentTarget.dataset.eventid;
-                    handleEditEvent(eventId);
-                });
-            });
-            document.querySelectorAll('.delete-event-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const eventId = e.currentTarget.dataset.eventid;
-                    const imageUrl = e.currentTarget.dataset.imageurl;
-                    handleDeleteEvent(eventId, imageUrl);
-                });
-            });
-        }
-        
-        async function loadEventDetails(eventData) {
-            document.getElementById('event-details-breadcrumb').textContent = eventData.title;
-            const eventDateFormatted = new Date(eventData.event_date).toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            
-            const reactionTypes = [
-                { type: 'like', emoji: '👍', label: 'أعجبني' },
-                { type: 'love', emoji: '❤️', label: 'أحببته' },
-                { type: 'sad', emoji: '😢', label: 'أحزنني' }
-            ];
-
-            let reactionButtonsHTML = '';
-            reactionTypes.forEach(rt => {
-                reactionButtonsHTML += `
-                    <button class="reaction-btn p-1 rounded-full hover:bg-gray-200 focus:outline-none" data-eventid="${eventData.id}" data-reactiontype="${rt.type}" aria-label="${rt.label}">
-                        <span id="${rt.type}-icon-details-${eventData.id}" class="text-xl">${rt.emoji}</span>
-                    </button>
-                    <span id="${rt.type}-count-details-${eventData.id}" class="text-xs text-slate-500 mr-1">0</span>
-                `;
-            });
-            
-            let ownerControlsHTML = '';
-            if (currentUser && currentUser.id === eventData.user_id) {
-                ownerControlsHTML = `
-                    <div class="mt-4 flex gap-2">
-                        <button class="edit-event-btn text-sm bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded" data-eventid="${eventData.id}">تعديل الفعالية</button>
-                        <button class="delete-event-btn text-sm bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded" data-eventid="${eventData.id}" data-imageurl="${eventData.image_url || ''}">حذف الفعالية</button>
-                    </div>
-                `;
-            }
-
-
-            eventDetailsContent.innerHTML = `
-                <h1 class="text-[#0e141b] tracking-light text-[32px] font-bold leading-tight mb-2">${eventData.title}</h1>
-                <p class="text-slate-500 text-sm mb-4">تاريخ النشر: ${new Date(eventData.created_at).toLocaleDateString('ar-EG')} | تاريخ الفعالية: ${eventDateFormatted}</p>
-                <img src="${eventData.image_url || 'https://placehold.co/800x400/64748B/E0E7FF?text=Event+Image'}" alt="${eventData.title}" class="w-full h-auto max-h-[400px] object-cover rounded-lg mb-6 shadow">
-                <p class="text-[#0e141b] text-base leading-relaxed whitespace-pre-wrap">${eventData.description || 'لا يوجد وصف تفصيلي لهذه الفعالية.'}</p>
-                 <div class="mt-6 pt-4 border-t border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">التفاعلات:</h3>
-                    <div class="flex items-center gap-2 text-slate-500 text-xs">
-                        ${reactionButtonsHTML}
-                    </div>
-                </div>
-                ${ownerControlsHTML}
-            `;
-
-            await fetchEventCounts(eventData.id, true); 
-            await checkUserReaction(eventData.id, true);
-
-            eventDetailsContent.querySelectorAll('.reaction-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const eventId = e.currentTarget.dataset.eventid;
-                    const reactionType = e.currentTarget.dataset.reactiontype;
-                    handleReaction(eventId, reactionType, true); 
-                });
-            });
-             eventDetailsContent.querySelectorAll('.edit-event-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const eventId = e.currentTarget.dataset.eventid;
-                    handleEditEvent(eventId);
-                });
-            });
-            eventDetailsContent.querySelectorAll('.delete-event-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const eventId = e.currentTarget.dataset.eventid;
-                    const imageUrl = e.currentTarget.dataset.imageurl;
-                    handleDeleteEvent(eventId, imageUrl);
-                });
-            });
-
-
-            loadEventComments(eventData.id);
-        }
-
-        async function loadEventComments(eventId) {
-            eventCommentsList.innerHTML = '<div class="text-center p-4 text-gray-500">جاري تحميل التعليقات...</div>';
-            
-            const { data: commentsData, error: commentsError } = await _supabase
-                .from('event_comments')
-                .select('*, profiles(avatar_url, full_name)') // Join with profiles directly
-                .eq('event_id', eventId)
-                .order('created_at', { ascending: false });
-
-            if (commentsError) {
-                console.error('Error fetching comments:', commentsError);
-                eventCommentsList.innerHTML = '<p class="text-red-500">فشل تحميل التعليقات.</p>';
-                return;
-            }
-
-            if (commentsData && commentsData.length > 0) {
-                eventCommentsList.innerHTML = commentsData.map(comment => {
-                    const commenterName = comment.profiles?.full_name || comment.commenter_name || 'مستخدم غير معروف';
-                    const commenterAvatarUrl = comment.profiles?.avatar_url || 'https://placehold.co/40x40/E0E0E0/B0B0B0?text=?';
-                    const commentDate = new Date(comment.created_at).toLocaleString('ar-EG', {dateStyle: 'medium', timeStyle: 'short'});
-                    
-                    let commentOwnerControls = '';
-                    if (currentUser && currentUser.id === comment.user_id) {
-                        commentOwnerControls = `
-                            <div class="comment-actions text-xs mt-1">
-                                <button class="edit-comment-btn text-blue-500 hover:text-blue-700" data-commentid="${comment.id}" data-eventid="${eventId}">تعديل</button>
-                                <button class="delete-comment-btn text-red-500 hover:text-red-700" data-commentid="${comment.id}" data-eventid="${eventId}">حذف</button>
-                            </div>
-                        `;
-                    }
-
-                    return `
-                        <div class="flex items-start gap-3 p-3 border-b border-gray-200 last:border-b-0" id="comment-item-${comment.id}">
-                            <img src="${commenterAvatarUrl}" alt="${commenterName}" class="size-10 rounded-full shrink-0 object-cover">
-                            <div class="flex-1">
-                                <div class="flex items-baseline gap-2">
-                                    <p class="text-[#0e141b] text-sm font-bold">${commenterName}</p>
-                                    <p class="text-[#4e7097] text-xs">${commentDate}</p>
-                                </div>
-                                <p class="comment-text-display text-[#0e141b] text-sm mt-1 whitespace-pre-wrap">${comment.comment_text}</p>
-                                <div class="edit-comment-area hidden-section mt-1">
-                                    <textarea class="form-input w-full p-2 border rounded-md text-sm" rows="2">${comment.comment_text}</textarea>
-                                    <div class="mt-1 flex gap-2">
-                                        <button class="save-edit-comment-btn text-xs bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600" data-commentid="${comment.id}" data-eventid="${eventId}">حفظ</button>
-                                        <button class="cancel-edit-comment-btn text-xs bg-gray-300 text-gray-700 py-1 px-2 rounded hover:bg-gray-400" data-commentid="${comment.id}">إلغاء</button>
-                                    </div>
-                                </div>
-                                ${commentOwnerControls}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                
-                // Add event listeners for new comment edit/delete buttons
-                eventCommentsList.querySelectorAll('.edit-comment-btn').forEach(btn => btn.addEventListener('click', handleEditCommentClick));
-                eventCommentsList.querySelectorAll('.delete-comment-btn').forEach(btn => btn.addEventListener('click', handleDeleteCommentClick));
-                eventCommentsList.querySelectorAll('.save-edit-comment-btn').forEach(btn => btn.addEventListener('click', handleSaveEditCommentClick));
-                eventCommentsList.querySelectorAll('.cancel-edit-comment-btn').forEach(btn => btn.addEventListener('click', handleCancelEditCommentClick));
-
-
-            } else {
-                eventCommentsList.innerHTML = '<p class="text-gray-500">لا توجد تعليقات حتى الآن. كن أول من يعلق!</p>';
-            }
-        }
-
-        function handleEditCommentClick(e) {
-            const commentId = e.currentTarget.dataset.commentid;
-            const commentItem = document.getElementById(`comment-item-${commentId}`);
-            if (commentItem) {
-                commentItem.querySelector('.comment-text-display').classList.add('hidden-section');
-                commentItem.querySelector('.comment-actions').classList.add('hidden-section');
-                commentItem.querySelector('.edit-comment-area').classList.remove('hidden-section');
-            }
-        }
-
-        function handleCancelEditCommentClick(e) {
-            const commentId = e.currentTarget.dataset.commentid;
-            const commentItem = document.getElementById(`comment-item-${commentId}`);
-            if (commentItem) {
-                commentItem.querySelector('.comment-text-display').classList.remove('hidden-section');
-                commentItem.querySelector('.comment-actions').classList.remove('hidden-section');
-                commentItem.querySelector('.edit-comment-area').classList.add('hidden-section');
-                // Optionally reset textarea value to original if needed, but not strictly necessary for cancel
-            }
-        }
-        async function handleSaveEditCommentClick(e) {
-            const commentId = e.currentTarget.dataset.commentid;
-            const eventId = e.currentTarget.dataset.eventid;
-            const commentItem = document.getElementById(`comment-item-${commentId}`);
-            if (!commentItem || !currentUser) return;
-
-            const newText = commentItem.querySelector('.edit-comment-area textarea').value;
-            if (!newText.trim()) {
-                showModalMessage('لا يمكن حفظ تعليق فارغ.', true);
-                return;
-            }
-
-            const { error } = await _supabase
-                .from('event_comments')
-                .update({ comment_text: newText, created_at: new Date().toISOString() }) // updated_at might be better here if you have it
-                .eq('id', commentId)
-                .eq('user_id', currentUser.id);
-
-            if (error) {
-                showModalMessage(`فشل تعديل التعليق: ${error.message}`, true);
-            } else {
-                showModalMessage('تم تعديل التعليق بنجاح.');
-                loadEventComments(eventId); // Refresh comments list
-            }
-        }
-
-        async function handleDeleteCommentClick(e) {
-            const commentId = e.currentTarget.dataset.commentid;
-            const eventId = e.currentTarget.dataset.eventid;
-             if (!currentUser) return;
-
-            showConfirmModal('هل أنت متأكد أنك تريد حذف هذا التعليق؟', async () => {
-                const { error } = await _supabase
-                    .from('event_comments')
-                    .delete()
-                    .eq('id', commentId)
-                    .eq('user_id', currentUser.id);
-
-                if (error) {
-                    showModalMessage(`فشل حذف التعليق: ${error.message}`, true);
-                } else {
-                    showModalMessage('تم حذف التعليق بنجاح.');
-                    loadEventComments(eventId); // Refresh comments list
-                    fetchEventCounts(eventId, true); 
-                    fetchEventCounts(eventId, false);
-                }
-            });
-        }
-        
-        addCommentForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-             if (!currentUser) { 
-                showModalMessage('يجب تسجيل الدخول للتعليق.', true);
-                navigateTo('login');
-                return;
-            }
-            if (!currentEventId) {
-                 showModalMessage('لم يتم تحديد فعالية للتعليق عليها.', true);
-                return;
-            }
-
-            const commentText = document.getElementById('comment-text').value;
-            if (!commentText.trim()) {
-                showModalMessage('لا يمكن إرسال تعليق فارغ.', true);
-                return;
-            }
-
-            const { data: profile, error: profileError } = await _supabase
-                .from('profiles')
-                .select('full_name, User_Name') 
-                .eq('id', currentUser.id)
-                .single();
-
-            if (profileError || !profile) {
-                showModalMessage('فشل في جلب معلومات المعلق.', true);
-                console.error("Error fetching commenter profile:", profileError);
-                return;
-            }
-            
-            const { error } = await _supabase.from('event_comments').insert({
-                event_id: currentEventId,
-                user_id: currentUser.id,
-                commenter_name: profile.full_name, 
-                commenter_email: currentUser.email, 
-                comment_text: commentText
-            });
-
-            if (error) {
-                showModalMessage(`فشل إضافة التعليق: ${error.message}`, true);
-            } else {
-                showModalMessage('تم إضافة التعليق بنجاح!');
-                document.getElementById('comment-text').value = ''; 
-                loadEventComments(currentEventId); 
-                fetchEventCounts(currentEventId, true); // Update counts on details page
-                fetchEventCounts(currentEventId, false); // Attempt to update counts on list page
-            }
-        });
-
-        // --- Flash Posts ---
-        const flashPostsList = document.getElementById('flash-posts-list');
-        const createFlashBtn = document.getElementById('create-flash-btn');
-        const createFlashFormContainer = document.getElementById('create-flash-form-container');
-        const createFlashForm = document.getElementById('create-flash-form');
-        const cancelCreateFlashBtn = document.getElementById('cancel-create-flash-btn');
-
-        createFlashBtn.addEventListener('click', () => {
-            createFlashFormContainer.classList.remove('hidden-section');
-            createFlashBtn.classList.add('hidden-section');
-        });
-        cancelCreateFlashBtn.addEventListener('click', () => {
-            createFlashFormContainer.classList.add('hidden-section');
-            createFlashBtn.classList.remove('hidden-section');
-            createFlashForm.reset();
-        });
-
-        createFlashForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!currentUser) { 
-                showModalMessage('يجب تسجيل الدخول لإنشاء منشور فلاش.', true);
-                navigateTo('login');
-                return;
-            }
-
-            const text = document.getElementById('flash-text').value;
-            const password = document.getElementById('flash-password').value; 
-
-            const { data: profile, error: profileError } = await _supabase
-                .from('profiles')
-                .select('full_name, academic_id')
-                .eq('id', currentUser.id)
-                .single();
-
-            if (profileError || !profile) {
-                showModalMessage('فشل في جلب معلومات كاتب المنشور.', true);
-                console.error("Error fetching author profile for flash post:", profileError);
-                return;
-            }
-
-            const flashPostData = {
-                text,
-                user_id: currentUser.id,
-                authar_name: profile.full_name, 
-                "Academic - id": profile.academic_id 
-            };
-            if (password) {
-                flashPostData.Password = password;
-            }
-
-            const { error } = await _supabase.from('Flash').insert(flashPostData);
-
-            if (error) {
-                showModalMessage(`فشل إنشاء منشور فلاش: ${error.message}`, true);
-            } else {
-                showModalMessage('تم إنشاء منشور فلاش بنجاح!');
-                createFlashForm.reset();
-                createFlashFormContainer.classList.add('hidden-section');
-                createFlashBtn.classList.remove('hidden-section');
-                loadFlashPosts(); 
-            }
-        });
-        
-       function createFlashPostCard(post) { 
-            const postDate = new Date(post.created_at).toLocaleString('ar-EG', {dateStyle: 'medium', timeStyle: 'short'});
-            const authorAvatarUrl = post.profiles?.avatar_url || 'https://placehold.co/40x40/E0E0E0/B0B0B0?text=?';
-            const authorName = post.profiles?.full_name || post.authar_name || 'مستخدم غير معروف';
-            
-            return `
-                <div class="bg-white p-5 rounded-lg shadow-md">
-                    <div class="flex items-center mb-3">
-                        <img src="${authorAvatarUrl}" alt="${authorName}" class="w-10 h-10 rounded-full mr-3 object-cover">
-                        <div>
-                            <p class="font-semibold text-gray-800">${authorName}</p>
-                            <p class="text-xs text-gray-500">${postDate}</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 whitespace-pre-wrap">${post.text}</p>
-                    ${post.Password ? '<p class="text-xs text-red-500 mt-2">هذا المنشور محمي بكلمة مرور (للعرض فقط).</p>' : ''}
-                    <p class="text-xs text-gray-400 mt-2">الرقم الأكاديمي للكاتب: ${post["Academic - id"] || 'N/A'}</p>
-                </div>
-            `;
-        }
-
-        async function loadFlashPosts() {
-            flashPostsList.innerHTML = '<div class="text-center p-4 text-gray-500">جاري تحميل منشورات فلاش...</div>';
-            
-            const { data: postsData, error: postsError } = await _supabase
-                .from('Flash')
-                .select('*') 
-                .order('created_at', { ascending: false });
-
-            if (postsError) {
-                console.error('Error fetching flash posts:', postsError);
-                flashPostsList.innerHTML = `<p class="text-red-500">فشل تحميل المنشورات: ${postsError.message}</p>`;
-                return;
-            }
-
-            if (postsData && postsData.length > 0) {
-                const postsWithProfileInfo = await Promise.all(postsData.map(async (post) => {
-                    let profileInfo = { avatar_url: null, full_name: null };
-                    if (post.user_id) { 
-                        const { data: profileData, error: profileError } = await _supabase
-                            .from('profiles')
-                            .select('avatar_url, full_name')
-                            .eq('id', post.user_id)
-                            .single();
-                        if (!profileError && profileData) {
-                            profileInfo = profileData;
-                        } else if (profileError) {
-                            console.warn(`Could not fetch profile for user_id ${post.user_id} for flash post ${post.id}:`, profileError.message);
-                        }
-                    }
-                    return { ...post, profiles: profileInfo }; 
-                }));
-
-                flashPostsList.innerHTML = postsWithProfileInfo.map(createFlashPostCard).join('');
-            } else {
-                flashPostsList.innerHTML = '<p class="text-gray-500">لا توجد منشورات فلاش حتى الآن.</p>';
-            }
-        }
-
-        async function handleEditEvent(eventId) {
-            if (!currentUser) {
-                showModalMessage('يجب تسجيل الدخول لتعديل الفعالية.', true);
-                navigateTo('login');
-                return;
-            }
-            editingEventId = eventId;
-            const { data: eventToEdit, error } = await _supabase
-                .from('project_events')
-                .select('*')
-                .eq('id', eventId)
-                .eq('user_id', currentUser.id) // Ensure only owner can fetch for edit
-                .single();
-
-            if (error || !eventToEdit) {
-                showModalMessage('فشل تحميل بيانات الفعالية للتعديل أو أنك لا تملك الصلاحية.', true);
-                editingEventId = null;
-                return;
-            }
-
-            document.getElementById('event-form-title').textContent = 'تعديل الفعالية';
-            document.getElementById('submit-event-form-btn').textContent = 'تحديث الفعالية';
-            document.getElementById('event-title').value = eventToEdit.title;
-            document.getElementById('event-description').value = eventToEdit.description;
-            document.getElementById('event-date').value = eventToEdit.event_date;
-            
-            currentEditingEventImageUrl = eventToEdit.image_url; // Store current image URL
-            const imagePreview = document.getElementById('event-image-preview-edit');
-            if (eventToEdit.image_url) {
-                imagePreview.src = eventToEdit.image_url;
-                imagePreview.classList.remove('hidden-section');
-            } else {
-                imagePreview.classList.add('hidden-section');
-                imagePreview.src = '';
-            }
-            document.getElementById('event-image-file').value = ''; // Clear file input
-
-
-            createEventFormContainer.classList.remove('hidden-section');
-            createEventBtn.classList.add('hidden-section');
-            navigateTo('events'); // Stay on events page, but show the form
-            createEventFormContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-
-
-        async function handleDeleteEvent(eventId, imageUrl) {
-            if (!currentUser) {
-                showModalMessage('يجب تسجيل الدخول لحذف الفعالية.', true);
-                navigateTo('login');
-                return;
-            }
-
-            showConfirmModal('هل أنت متأكد أنك تريد حذف هذه الفعالية؟ هذا الإجراء لا يمكن التراجع عنه.', async () => {
-                // First, delete dependent records
-                const { error: commentsError } = await _supabase.from('event_comments').delete().eq('event_id', eventId);
-                if (commentsError) {
-                    showModalMessage(`فشل حذف تعليقات الفعالية: ${commentsError.message}`, true);
-                    // Optionally, decide if you want to stop the whole delete process here
-                }
-
-                const { error: reactionsError } = await _supabase.from('event_reactions').delete().eq('event_id', eventId);
-                if (reactionsError) {
-                    showModalMessage(`فشل حذف تفاعلات الفعالية: ${reactionsError.message}`, true);
-                }
-
-                // Delete image from storage if URL exists
-                if (imageUrl) {
-                    try {
-                        const fileName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-                        if (fileName) {
-                            const { error: storageError } = await _supabase.storage.from('events-images').remove([fileName]);
-                            if (storageError) {
-                                console.warn("Could not delete event image from storage, it might not exist or RLS issue:", storageError.message);
-                                // Don't necessarily block event deletion for this, but log it.
-                            }
-                        }
-                    } catch (e) {
-                        console.warn("Error parsing image URL for deletion:", e);
-                    }
-                }
-
-                // Finally, delete the event itself
-                const { error: eventDeleteError } = await _supabase
-                    .from('project_events')
-                    .delete()
-                    .eq('id', eventId)
-                    .eq('user_id', currentUser.id); // Ensure only owner can delete
-
-                if (eventDeleteError) {
-                    showModalMessage(`فشل حذف الفعالية: ${eventDeleteError.message}`, true);
-                } else {
-                    showModalMessage('تم حذف الفعالية بنجاح.');
-                    loadEvents(); // Refresh the list
-                    // If on event details page for this event, navigate away
-                    if (document.getElementById('event-details').classList.contains('hidden-section') === false && currentEventId === eventId) {
-                        navigateTo('events');
-                    }
-                }
-            });
-        }
-
-
-        // --- Initial Load ---
-        async function initializeApp() {
-            const hash = window.location.hash.substring(1);
-            const target = (hash && document.getElementById(hash)) ? hash : 'home';
-            pendingNavigationTarget = { targetId: target, eventData: null };
-
-            // onAuthStateChange will handle the first navigation once auth state is known
-            // and initialAuthProcessed is true.
-        }
-
-        initializeApp();
-
     </script>
 </body>
 </html>
