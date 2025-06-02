@@ -237,7 +237,7 @@
             if (!element) return; 
             element.textContent = message;
             element.className = 'message-area'; 
-            if (type !== 'none' && type !== '') { // Check for empty type as well
+            if (type !== 'none' && type !== '') { 
                 element.classList.add(type); 
                 element.style.display = 'block'; 
             } else {
@@ -277,19 +277,11 @@
                  }
             }
 
-            // **الإضافة الجديدة: الاستماع لحدث استعادة كلمة المرور**
             if (supabaseClient) {
                 supabaseClient.auth.onAuthStateChange(async (event, session) => {
                     if (event === 'PASSWORD_RECOVERY') {
                         console.log('Supabase: تم التعرف على وضع استعادة كلمة المرور.');
-                        // يمكنك عرض رسالة معلوماتية هنا إذا أردت
-                        // showMessage(messageArea, 'جاهز لتحديث كلمة المرور. يرجى إدخال البيانات الجديدة.', 'info');
-                        // الـ SDK سيتعامل مع الـ session تلقائياً
                     }
-                    // يمكنك إضافة تعامل مع أحداث أخرى إذا لزم الأمر، مثل SIGNED_IN
-                    // if (event === 'SIGNED_IN' && session) {
-                    //    console.log('Supabase: تم تسجيل الدخول، المستخدم:', session.user.email);
-                    // }
                 });
             }
 
@@ -297,8 +289,8 @@
             form.addEventListener('submit', async function(event) {
                 event.preventDefault(); 
                 submitButton.disabled = true; 
+                let passwordUpdateSuccessful = false; // Flag to track successful update
                 
-                // مسح الرسالة قبل كل محاولة إرسال جديدة
                 showMessage(messageArea, '', 'none'); 
 
                 const newPassword = newPasswordInput.value;
@@ -346,14 +338,38 @@
                         showMessage(messageArea, friendlyErrorMessage, 'error');
                     } else {
                         showMessage(messageArea, 'تم تحديث كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.', 'success');
-                        form.reset(); 
-                        // setTimeout(() => { window.location.href = '/login'; }, 3000);
+                        passwordUpdateSuccessful = true; // Mark as successful
+
+                        // Hide form groups (containing labels and inputs)
+                        const formGroups = form.querySelectorAll('.form-group');
+                        formGroups.forEach(group => group.style.display = 'none');
+
+                        // Hide original submit button
+                        submitButton.style.display = 'none';
+
+                        // Create the "Go to site" button
+                        const goToSiteButton = document.createElement('button');
+                        goToSiteButton.id = 'goToSiteBtn';
+                        goToSiteButton.textContent = 'الذهاب إلى الموقع';
+                        goToSiteButton.className = 'submit-button'; // Reuse existing styles
+                        goToSiteButton.type = 'button'; // Important to prevent form submission behavior
+
+                        goToSiteButton.addEventListener('click', function() {
+                            window.location.href = 'https://minal0p.github.io/Flash/';
+                        });
+
+                        // Append the button to the form, it will appear after the messageArea
+                        form.appendChild(goToSiteButton);
+                        
+                        // No need to call form.reset() as elements are hidden/cleared
                     }
                 } catch (catchError) {
                     console.error('Catch error:', catchError);
                     showMessage(messageArea, 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.', 'error');
                 } finally {
-                    submitButton.disabled = false; 
+                    if (!passwordUpdateSuccessful) { // Only re-enable if update was not successful
+                        submitButton.disabled = false; 
+                    }
                 }
             });
         });
