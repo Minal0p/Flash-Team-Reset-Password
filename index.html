@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>تعديل كلمة المرور - فريق Flash</title>
+    <title>إعادة تعيين كلمة مرور حساب فريق Flash</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -222,7 +222,7 @@
         </main>
         <footer class="page-footer">
             <p class="footer-text">
-                &copy; <script>document.write(new Date().getFullYear())</script> فريق Flash. جميع الحقوق محفوظة.
+                &copy; 2024 فريق Flash. جميع الحقوق محفوظة.
             </p>
         </footer>
     </div>
@@ -270,17 +270,30 @@
             if (!supabaseClient && messageArea) {
                  if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY' || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
                     showMessage(messageArea, 'إعدادات الاتصال بـ Supabase غير مكتملة. لا يمكن تحديث كلمة المرور.', 'error');
-                 } else if (typeof supabase === 'undefined' || !supabase.createClient) {
-                     showMessage(messageArea, 'فشل تحميل مكتبة Supabase. لا يمكن تحديث كلمة المرور.', 'error');
-                 } else if (!messageArea.textContent) { 
+                } else if (typeof supabase === 'undefined' || !supabase.createClient) {
+                    showMessage(messageArea, 'فشل تحميل مكتبة Supabase. لا يمكن تحديث كلمة المرور.', 'error');
+                } else if (!messageArea.textContent) { 
                     showMessage(messageArea, 'فشل تهيئة الاتصال بالخدمة. لا يمكن تحديث كلمة المرور.', 'error');
-                 }
+                }
             }
 
             if (supabaseClient) {
                 supabaseClient.auth.onAuthStateChange(async (event, session) => {
                     if (event === 'PASSWORD_RECOVERY') {
                         console.log('Supabase: تم التعرف على وضع استعادة كلمة المرور.');
+                        // The form is already visible, user can now enter new password.
+                        // No need to redirect from here, user is on the correct page.
+                    } else if (event === 'USER_UPDATED') {
+                        // This event might fire after password update.
+                        // You could potentially redirect here if desired, but the form submission handler already does.
+                        console.log('Supabase: تم تحديث بيانات المستخدم (قد يكون بعد تغيير كلمة المرور).');
+                    } else if (event === "SIGNED_IN" && session?.user?.aud === "authenticated") {
+                        // If user is already signed in (e.g. different tab, or came back to this page after successful reset & login)
+                        // and they are on the password reset page, it might be good to redirect them.
+                        // However, the primary success redirection is handled in the form submit.
+                        console.log('Supabase: المستخدم مسجل دخوله بالفعل.');
+                        // Optional: redirect if on reset page and already logged in
+                        // window.location.href = 'YOUR_APP_HOME_PAGE_URL';
                     }
                 });
             }
@@ -321,6 +334,9 @@
                 }
 
                 try {
+                    // The user is on this page because they clicked a recovery link.
+                    // Supabase handles the recovery token from the URL hash automatically.
+                    // We just need to update the user with the new password.
                     const { data, error } = await supabaseClient.auth.updateUser({
                         password: newPassword
                     });
@@ -332,7 +348,7 @@
                              friendlyErrorMessage = 'كلمة المرور ضعيفة جداً أو لا تستوفي المتطلبات. يرجى اختيار كلمة مرور أقوى.';
                         } else if (error.message.includes("same as the old password")) {
                              friendlyErrorMessage = 'كلمة المرور الجديدة يجب أن تكون مختلفة عن كلمة المرور القديمة.';
-                        } else if (error.message.includes("Invalid token") || error.message.includes("expired") || error.message.includes("Auth session missing") || error.message.includes("Invalid Refresh Token")) {
+                        } else if (error.message.includes("Invalid token") || error.message.includes("expired") || error.message.includes("Auth session missing") || error.message.includes("Invalid Refresh Token") || error.code === 'invalid_grant') {
                              friendlyErrorMessage = 'رابط إعادة تعيين كلمة المرور غير صالح، انتهت صلاحيته، أو أن الجلسة غير موجودة. يرجى طلب رابط جديد أو التأكد من أنك تستخدم الرابط الصحيح.';
                         }
                         showMessage(messageArea, friendlyErrorMessage, 'error');
@@ -355,13 +371,12 @@
                         goToSiteButton.type = 'button'; // Important to prevent form submission behavior
 
                         goToSiteButton.addEventListener('click', function() {
-                            window.location.href = 'https://minal0p.github.io/Flash/';
+                            window.location.href = 'https://minal0p.github.io/Flash-Team/'; // رابط موقعك الرئيسي
                         });
 
                         // Append the button to the form, it will appear after the messageArea
                         form.appendChild(goToSiteButton);
                         
-                        // No need to call form.reset() as elements are hidden/cleared
                     }
                 } catch (catchError) {
                     console.error('Catch error:', catchError);
